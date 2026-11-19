@@ -6,7 +6,7 @@ Video: Gemini Omni Flash 1.2 (ElevenLabs Flows) · Suara: ElevenLabs, Janu – C
 - **Visual:** satu gambar kunci (gelas es teh di meja warung kertas) dipakai sebagai **frame pertama adegan 1** dan **frame terakhir adegan 5**. Akhir video kembali ke gambar yang persis sama dengan awal, jadi saat TikTok/Reels mengulang, potongannya tidak terasa.
 - **Narasi:** kalimat terakhir sengaja menggantung, *"…semuanya bermuara di…"*, dan langsung disambung kalimat pertama, *"segelas es teh di warung ini…"*. Didengar dari awal tetap utuh; saat diulang terdengar seperti satu kalimat.
 - **Audio:** musik dibuat dengan ujung yang bisa disambung (tidak ada akhiran final), dan tidak ada jeda hening di awal maupun akhir.
-- **CTA** (komentar & like) hanya berupa teks di layar dan komentar yang di-pin, tidak diucapkan, supaya tidak memutus loop.
+- **CTA** (komentar & like) diucapkan narator sebelum kalimat penutup yang menggantung, jadi loop tetap menyambung. Tidak ada tulisan merek di layar.
 
 ## Narasi (±72 kata)
 | Adegan | Waktu | Narasi |
@@ -15,7 +15,7 @@ Video: Gemini Omni Flash 1.2 (ElevenLabs Flows) · Suara: ElevenLabs, Janu – C
 | 2 Konteks | 3–8 s | Kok bisa? Awal abad ke-19, Belanda membawa bibit dan pekerja teh dari Tiongkok ke Jawa. |
 | 3 Penjelasan | 8–17 s | Lewat tanam paksa, petani Jawa wajib menanam teh, untuk dikapalkan ke seluruh dunia. |
 | 4 Twist | 17–25 s | Dan yang paling tak terduga: konon tahun 1908, pedagang New York mengirim contoh teh dalam kantong sutra. Pembelinya malah mencelupkannya langsung. Lahirlah teh celup! |
-| 5 Payoff → loop | 25–30 s | Dari kebun, kapal, sampai kantong kecil, semuanya bermuara di… *(kembali ke adegan 1)* |
+| 5 Payoff → loop | 25–32,5 s | Kalau baru tahu, tulis "teh" di komentar, dan jangan lupa like! Dari kebun, kapal, sampai kantong kecil, semuanya bermuara di… *(kembali ke adegan 1)* |
 
 ## Storyboard
 | # | Waktu | Visual | Kamera & transisi | SFX & musik | Teks layar |
@@ -24,7 +24,7 @@ Video: Gemini Omni Flash 1.2 (ElevenLabs Flows) · Suara: ElevenLabs, Janu – C
 | 2 | 3–8 | Kapal layar Belanda kertas tiba di pelabuhan Jawa; peti bibit teh dan pekerja Tiongkok turun ke dermaga | Crane turun dari langit ke dermaga | Ombak, tali kapal, langkah di papan kayu | **Abad ke-19 · Tiongkok → Jawa** |
 | 3 | 8–17 | Kebun teh berundak di pegunungan Jawa; petani bercaping memetik daun di bawah pengawasan mandor; keranjang daun berubah jadi peti ekspor dan kapal berlayar | Dolly lateral sepanjang undakan, lalu tilt-up ke laut | Suara alam pegunungan, keranjang bambu, cambuk jauh (pelan), lonceng kapal; perkusi masuk | **Tanam Paksa (1830–1870)** · **Teh Jawa → dunia** |
 | 4 | 17–25 | Kantor dagang New York awal 1900-an: kantong sutra kecil berisi teh dikirim; seorang pembeli mencelupkan kantong itu ke cangkir air panas, teh menyebar | Push-in ke cangkir, slow-motion saat kantong dicelup | Mesin tik, "plop" kantong masuk air, ding! + boom kecil saat "lahirlah teh celup" | **1908 · New York** · **TEH CELUP LAHIR!** |
-| 5 | 25–30 | Kantong teh celup jatuh ke gelas es teh di meja warung; kamera mundur dan berakhir **persis** di gambar kunci adegan 1 | Pull-back yang mendarat di frame kunci (end frame = start frame) | Es berdenting (menyambung ke awal), musik tanpa akhiran | **Tulis "TEH" kalau baru tahu! · ❤️** |
+| 5 | 25–30 | Kantong teh celup jatuh ke gelas es teh di meja warung; kamera mundur dan berakhir **persis** di gambar kunci adegan 1 | Pull-back yang mendarat di frame kunci (end frame = start frame) | Es berdenting (menyambung ke awal), musik tanpa akhiran | **TULIS "TEH" DI KOMENTAR!** · **JANGAN LUPA LIKE ♥** |
 
 ## Teks & unggahan
 - Judul: **Es Teh Lahir dari Tanam Paksa & Sebuah Kesalahan?! 🍵**

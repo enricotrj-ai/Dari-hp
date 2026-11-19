@@ -6,7 +6,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 A = os.path.join(ROOT, "audio")
 OUT = os.path.join(ROOT, "render")
 os.makedirs(OUT, exist_ok=True)
-TEMPO = 1.2
+TEMPO = 1.22
 GAP = 0.06
 LEAD = 0.05     # tiny: start word follows the last word of the previous loop
 TAIL = 0.30     # "...bermuara di" -> wrap -> "segelas es teh..."
@@ -19,37 +19,58 @@ def dur(p):
     return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration",
                                           "-of", "csv=p=0", p]).decode())
 
-NARR = os.path.join(A, "narasi_take1.mp3")
-words = [w for w in json.load(open(os.path.join(A, "words_take1.json")))["words"]
-         if w["type"] == "word" and not w["text"].startswith("[") and not w["text"].endswith("]")]
-SEG = [(0.12, 6.30), (6.42, 7.30), (7.45, 12.76), (12.90, 18.60), (18.60, 30.04), (30.04, dur(NARR))]
+SRC = {"n": (os.path.join(A, "narasi_take1.mp3"), "words_take1.json"),
+       "c": (os.path.join(A, "cta_take1.mp3"), "words_cta_take1.json")}
+NARR = SRC["n"][0]
+def load(key):
+    out, inside = [], False
+    for w in json.load(open(os.path.join(A, SRC[key][1])))["words"]:
+        if w["type"] != "word":
+            continue
+        txt = w["text"]
+        if txt.startswith("["):
+            inside = not txt.endswith("]")
+            continue
+        if inside:
+            inside = not txt.endswith("]")
+            continue
+        out.append(dict(w, src=key))
+    return out
+# segments: (source, start, end). CTA sits before the hanging loop line.
+SEG = [("n", 0.12, 6.30), ("n", 6.42, 7.30), ("n", 7.45, 12.76), ("n", 12.90, 18.60), ("n", 18.60, 30.04),
+       ("c", 0.0, 4.22), ("n", 30.04, dur(NARR))]
 
 seg_new, t = [], LEAD
-for s, e in SEG:
-    seg_new.append((s, e, t)); t += (e - s) / TEMPO + GAP
+for k, s, e in SEG:
+    seg_new.append((k, s, e, t)); t += (e - s) / TEMPO + GAP
 TOTAL = round(t - GAP + TAIL, 2)
 
-def remap(x):
-    for s, e, n in seg_new:
+def remap(k, x):
+    cand = [z for z in seg_new if z[0] == k]
+    for _, s, e, n in cand:
         if s - 1e-6 <= x <= e + 1e-6:
             return n + (x - s) / TEMPO
-    # word slightly outside a segment window: snap to nearest
-    best = min(seg_new, key=lambda z: min(abs(x - z[0]), abs(x - z[1])))
-    return best[2] + (min(max(x, best[0]), best[1]) - best[0]) / TEMPO
-for w in words:
-    w["ns"], w["ne"] = remap(w["start"]), remap(min(w["end"], SEG[-1][1]))
+    best = min(cand, key=lambda z: min(abs(x - z[1]), abs(x - z[2])))
+    return best[3] + (min(max(x, best[1]), best[2]) - best[1]) / TEMPO
+words = []
+for k in ("n", "c"):
+    for w in load(k):
+        w["ns"], w["ne"] = remap(k, w["start"]), remap(k, w["end"])
+        words.append(w)
+words.sort(key=lambda w: w["ns"])
 
 parts, labels = [], []
-for i, (s, e, n) in enumerate(seg_new):
-    parts.append(f"[0:a]atrim={s}:{e},asetpts=PTS-STARTPTS,atempo={TEMPO},afade=t=out:st={max((e-s)/TEMPO-0.04,0):.3f}:d=0.04,adelay={int(n*1000)}:all=1[n{i}]")
+for i, (k, s, e, n) in enumerate(seg_new):
+    idx = 0 if k == "n" else 1
+    parts.append(f"[{idx}:a]atrim={s}:{e},asetpts=PTS-STARTPTS,atempo={TEMPO},afade=t=out:st={max((e-s)/TEMPO-0.04,0):.3f}:d=0.04,adelay={int(n*1000)}:all=1[n{i}]")
     labels.append(f"[n{i}]")
-run(["ffmpeg", "-v", "error", "-y", "-i", NARR, "-filter_complex",
+run(["ffmpeg", "-v", "error", "-y", "-i", NARR, "-i", SRC["c"][0], "-filter_complex",
      ";".join(parts) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0,apad,atrim=0:{TOTAL},loudnorm=I=-14:TP=-1.5:LRA=11[o]",
      "-map", "[o]", "-ar", "48000", "-ac", "2", os.path.join(OUT, "narasi_timeline.wav")])
 
 # ---------- scenes ----------
-st = [n for _, _, n in seg_new]
-cuts = [0.0, st[2] - 0.08, st[3] - 0.08, st[4] - 0.08, st[5] - 0.08, TOTAL]
+st = [n for _, _, _, n in seg_new]
+cuts = [0.0, st[2] - 0.08, st[3] - 0.08, st[4] - 0.08, st[5] + 1.9, TOTAL]
 clips = ["adegan1/adegan1_raw.mp4", "adegan2/adegan2_30fps.mp4", "adegan3/adegan3_30fps.mp4",
          "adegan4/adegan4_30fps.mp4", "adegan5/adegan5_30fps.mp4"]
 factors, files = [], []
@@ -100,7 +121,10 @@ run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex",
 
 # ---------- music loop: output wraps to its own start ----------
 # A = m[0.5 : T+0.5], crossfaded at the end into B = m[0 : 0.5]; after wrap playback resumes at m[0.5].
-M = os.path.join(A, "musik_loop.mp3"); X = 0.5
+M0 = os.path.join(A, "musik_loop.mp3"); X = 0.5
+M = os.path.join(OUT, "musik_2x.wav")   # music doubled with a crossfade so it covers any length
+run(["ffmpeg", "-v", "error", "-y", "-i", M0, "-i", M0, "-filter_complex", "[0:a][1:a]acrossfade=d=1.5:c1=tri:c2=tri[o]",
+     "-map", "[o]", "-ar", "48000", "-ac", "2", M])
 run(["ffmpeg", "-v", "error", "-y", "-i", M, "-i", M, "-filter_complex",
      f"[0:a]atrim={X}:{TOTAL+X},asetpts=PTS-STARTPTS[a];[1:a]atrim=0:{X},asetpts=PTS-STARTPTS[b];"
      f"[a][b]acrossfade=d={X}:c1=tri:c2=tri,atrim=0:{TOTAL}[o]",
@@ -110,7 +134,7 @@ run(["ffmpeg", "-v", "error", "-y", "-i", M, "-i", M, "-filter_complex",
 def ts(x):
     x = max(x, 0); return f"{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}"
 GOLD = "&H003CC8F5&"; WHITE = "{\\c&H00FFFFFF&}"
-KEY = {"tanam", "paksa", "paksa…", "kesalahan", "belanda", "tiongkok", "jawa", "petani", "dunia", "new", "york",
+KEY = {"komentar", "like", "\"teh\"", "tanam", "paksa", "paksa…", "kesalahan", "belanda", "tiongkok", "jawa", "petani", "dunia", "new", "york",
        "sutra", "celup", "kebun", "kapal", "kantong", "warung"}
 NUM = {"ke-sembilan belas": "KE-19", "seribu sembilan ratus delapan": "1908"}
 toks, i = [], 0
@@ -152,9 +176,9 @@ card("ABAD KE-19 · TIONGKOK → JAWA", wt("Awal"), cuts[2] - 0.1, 300)
 card("TANAM PAKSA (1830–1870)", cuts[2] + 0.1, wt("dikapalkan") - 0.1, 300)
 card("TEH JAWA → DUNIA", wt("dikapalkan"), cuts[3] - 0.1, 300)
 card("{\\c" + GOLD + "}1908 · NEW YORK", wt("tahun", cuts[3]), wt("Lahirlah") - 0.1, 300)
-card("TEH CELUP LAHIR!", wt("Lahirlah"), cuts[4] - 0.1, 300)
-card("TULIS \"TEH\" KALAU BARU TAHU!", cuts[4] + 0.2, TOTAL - 0.45, 250, "Small")
-card("LIKE ♥  ·  RoyalPiggy-ID", cuts[4] + 0.6, TOTAL - 0.45, 340, "Small")
+card("TEH CELUP LAHIR!", wt("Lahirlah"), wt("tulis", st[5] - 0.2) - 0.15, 300)
+card("TULIS \"TEH\" DI KOMENTAR!", wt("tulis", st[5] - 0.2) - 0.1, TOTAL - 0.45, 250, "Small")
+card("JANGAN LUPA LIKE ♥", wt("like!", st[5] - 0.2) - 0.1, TOTAL - 0.45, 340, "Small")
 
 ass = """[Script Info]
 ScriptType: v4.00+
