@@ -7,14 +7,14 @@ Video: Gemini Omni Flash 1.2 (via ElevenLabs Flows) · Suara: ElevenLabs, narato
 - Kalimat hook: *"Teh di gelasmu ini pernah dijaga kaisar, jadi uang, bahkan dicuri mata-mata!"*: tiga klaim mengejutkan dalam 3 detik, lalu langsung dijawab "Kok bisa? Yuk, mulai dari awal." supaya penonton merasa diajak masuk ke ceritanya.
 - Hook: daun teh kertas jatuh ke cangkir porselen → kamera mundur cepat: cangkir itu ternyata pusat diorama tiga lapis (istana kaisar · bangsawan Eropa · warung rakyat).
 
-## 2. Narasi 30 detik (73 kata)
+## 2. Narasi 30 detik (72 kata)
 | Adegan | Waktu | Narasi |
 |---|---|---|
 | 1 Hook | 0–3 s | Teh di gelasmu ini pernah dijaga kaisar, jadi uang, bahkan dicuri mata-mata! |
 | 2 Konteks | 3–8 s | Kok bisa? Yuk, mulai dari awal. Konon, 2737 Sebelum Masehi, daun teh jatuh ke rebusan Kaisar Shen Nong. |
 | 3 Penjelasan | 8–17 s | Di Tibet, teh dipres jadi bata dan dipakai sebagai uang. Lalu Belanda membawanya ke Eropa, jadi minuman bangsawan. |
 | 4 Twist | 17–25 s | Dan ini bagian paling gila: tahun 1848, Robert Fortune menyamar dan menyelundupkan bibit teh ke India. |
-| 5 Payoff | 25–30 s | Kamu tim teh manis atau tawar? Tulis di komentar, like, dan ikuti RoyalPiggy-ID! |
+| 5 Payoff | 25–30 s | Kamu tim teh manis atau tawar? Tulis di komentar, dan jangan lupa like! |
 
 ## 3. Storyboard
 | # | Waktu | Visual | Kamera & transisi | SFX & musik | Teks layar |
@@ -41,7 +41,7 @@ Orkestra sinematik ringan: guzheng di awal, perkusi masuk di adegan 3, tegang di
 Kata-per-kata, putih tebal dengan outline gelap, di area aman tengah-bawah; kata kunci (kaisar, uang, 1848, mata-mata) berwarna emas.
 
 ## 9. CTA
-"Kamu tim teh manis atau tawar? Tulis di komentar, like, dan ikuti RoyalPiggy-ID!" Di layar muncul polling visual dua gelas (manis vs tawar), ikon komentar & like yang berdenyut, lalu logo RoyalPiggy-ID. Pin komentar pertama: "Tim manis ketik 🍯, tim tawar ketik 🍵. Mana yang menang?"
+"Kamu tim teh manis atau tawar? Tulis di komentar, dan jangan lupa like!" Di layar muncul polling visual dua gelas (manis vs tawar), ikon komentar & like yang berdenyut, lalu logo RoyalPiggy-ID. Pin komentar pertama: "Tim manis ketik 🍯, tim tawar ketik 🍵. Mana yang menang?"
 
 ## 10. Judul, deskripsi, hashtag
 - Judul Shorts: **Teh Pernah Dicuri Mata-Mata?! 🍵 #shorts**
