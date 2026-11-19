@@ -75,3 +75,12 @@ Aturan pembawaan:
 
 ## 8. Paket unggahan
 Judul berbentuk pertanyaan mengejutkan + emoji, deskripsi 2 kalimat + ajakan komentar/like, komentar yang di-pin dengan dua pilihan emoji, 8–10 hashtag (#sejarah #faktaunik #edukasi #fyp #shorts + topik). Sertakan catatan fakta & sumber keraguan di naskah.
+
+## 9. Thumbnail gaya kolase (disukai user)
+Template: `thumbnail_template.py` (font Bangers & Anton ada di `fonts/`, OFL). Jalankan: `python3 thumbnail_template.py <folder berisi pan_*.png dan fonts/>`.
+- 1080×1920, latar gambar kunci yang diburamkan & digelapkan.
+- Strip kuning sobek di atas berisi teaser hitam (Bangers ±76 pt).
+- 2–3 panel frame video dengan tepi kertas sobek, bingkai kertas putih, bayangan, sedikit miring; warna & kontras dinaikkan.
+- Headline raksasa kuning (Bangers ±250 pt) berstroke hitam tebal + bayangan; panah merah berstroke hitam ke objek utama.
+- Stiker label kotak (merah/kuning/putih) miring berisi tahun/fakta.
+- Banner merah sobek di bawah: pertanyaan dua baris (putih + kuning) + stiker putih kecil. Klaim yang masih "konon" diberi tanda tanya.
