@@ -3,26 +3,27 @@ Explainer 9:16 · 30 detik · 1080x1920 · 30 fps · Cinematic Historical Paper 
 Video: Gemini Omni Flash 1.2 (via ElevenLabs Flows) · Suara: ElevenLabs, narator pria hangat & jelas
 
 ## 1. Judul & viral hook
-- Judul: **Daun yang Jadi Rahasia Kaisar, Lalu Dicuri Mata-Mata**
+- Judul: **Teh di Gelasmu Pernah Dicuri Mata-Mata?!**
+- Kalimat hook: *"Teh di gelasmu ini pernah dijaga kaisar, jadi uang, bahkan dicuri mata-mata!"*: tiga klaim mengejutkan dalam 3 detik, lalu langsung dijawab "Kok bisa? Yuk, mulai dari awal." supaya penonton merasa diajak masuk ke ceritanya.
 - Hook: daun teh kertas jatuh ke cangkir porselen → kamera mundur cepat: cangkir itu ternyata pusat diorama tiga lapis (istana kaisar · bangsawan Eropa · warung rakyat).
 
-## 2. Narasi 30 detik (72 kata)
+## 2. Narasi 30 detik (73 kata)
 | Adegan | Waktu | Narasi |
 |---|---|---|
-| 1 Hook | 0–3 s | Daun ini pernah jadi rahasia kaisar… dan dicuri lewat aksi mata-mata. |
-| 2 Konteks | 3–8 s | Menurut legenda, tahun 2737 Sebelum Masehi, daunnya jatuh ke air rebusan Kaisar Shen Nong. |
-| 3 Penjelasan | 8–17 s | Di Tibet, teh dipadatkan jadi bata dan dipakai sebagai uang. Abad ke-17, Belanda membawanya ke Eropa, jadi minuman bangsawan. |
-| 4 Twist | 17–25 s | Tapi tahun 1848, Robert Fortune menyamar dan menyelundupkan bibit teh dari Tiongkok ke India. Monopoli pun runtuh. |
-| 5 Payoff | 25–30 s | Kini, teh minuman terbanyak kedua setelah air. Kamu tim teh manis? Ikuti RoyalPiggy-ID. |
+| 1 Hook | 0–3 s | Teh di gelasmu ini pernah dijaga kaisar, jadi uang, bahkan dicuri mata-mata! |
+| 2 Konteks | 3–8 s | Kok bisa? Yuk, mulai dari awal. Konon, 2737 Sebelum Masehi, daun teh jatuh ke rebusan Kaisar Shen Nong. |
+| 3 Penjelasan | 8–17 s | Di Tibet, teh dipres jadi bata dan dipakai sebagai uang. Lalu Belanda membawanya ke Eropa, jadi minuman bangsawan. |
+| 4 Twist | 17–25 s | Dan ini bagian paling gila: tahun 1848, Robert Fortune menyamar dan menyelundupkan bibit teh ke India. |
+| 5 Payoff | 25–30 s | Kamu tim teh manis atau tawar? Tulis di komentar, like, dan ikuti RoyalPiggy-ID! |
 
 ## 3. Storyboard
 | # | Waktu | Visual | Kamera & transisi | SFX & musik | Teks layar |
 |---|---|---|---|---|---|
-| 1 | 0–3 | Daun kertas jatuh ke cangkir biru-putih → diorama 3 lapis terbuka seperti buku pop-up | Makro → pull-back cepat & naik (klip 6 s dipercepat 2×) | Desir kertas, "plink" tetes air saat daun menyentuh teh; guzheng mulai | **RAHASIA KAISAR** |
-| 2 | 3–8 | Shen Nong duduk di bawah pohon teh kertas, angin menjatuhkan daun ke kuali; uap membentuk aksara 茶 | Push-in lambat, transisi lipatan kertas | Angin, air mendidih, "whoosh" saat uap jadi aksara | **±2737 SM · Legenda** |
+| 1 | 0–3 | Daun kertas jatuh ke cangkir biru-putih → diorama 3 lapis terbuka seperti buku pop-up | Makro → pull-back cepat & naik (klip 6 s dipercepat 2×) | Desir kertas, "plink" tetes air saat daun menyentuh teh; guzheng mulai, tiga "hit" perkusi di kata *kaisar · uang · mata-mata* | **DIJAGA KAISAR · JADI UANG · DICURI MATA-MATA?!** |
+| 2 | 3–8 | Shen Nong duduk di bawah pohon teh kertas, angin menjatuhkan daun ke kuali; uap membentuk aksara 茶 | Push-in lambat, transisi lipatan kertas | Angin, air mendidih, "whoosh" saat uap jadi aksara | **Kok bisa? 👀** → **±2737 SM · Legenda** |
 | 3 | 8–17 | (a) Bata teh dipres & ditukar di pegunungan Tibet; (b) peta kertas 3D, kapal Belanda berlayar Asia → Eropa; (c) salon bangsawan Eropa minum teh | Wipe kertas antar lapisan, garis rute animasi di peta | "Thud" bata teh, koin berdenting, ombak & lonceng kapal; perkusi masuk | **Bata teh = uang** · **Abad ke-17 → Eropa** |
-| 4 | 17–25 | Malam berkabut, Fortune berjubah Tiongkok membawa kotak kaca berisi bibit; panah merah Tiongkok → India, segel "monopoli" retak | Dolly gelap & tegang, snap zoom ke peta | Langkah kaki, detak jantung, "crack" + boom bass saat segel pecah | **1848 · Spionase Teh** |
-| 5 | 25–30 | Cangkir kaisar match-cut menjadi gelas es teh manis di meja warung; logo RoyalPiggy-ID terlipat dari kertas | Match-cut, push-in, end card | Es batu berdenting, "pop" kertas saat logo; musik resolve hangat | **#2 setelah air** · **Tim teh manis?** · **RoyalPiggy-ID** |
+| 4 | 17–25 | Malam berkabut, Fortune berjubah Tiongkok membawa kotak kaca berisi bibit; panah merah Tiongkok → India, segel "monopoli" retak | Dolly gelap & tegang, snap zoom ke peta | Langkah kaki, detak jantung, "crack" + boom bass saat segel pecah | **Bagian paling gila…** → **1848 · Spionase Teh** |
+| 5 | 25–30 | Cangkir kaisar match-cut menjadi gelas es teh manis di meja warung; logo RoyalPiggy-ID terlipat dari kertas | Match-cut, push-in, end card | Es batu berdenting, "pop" kertas saat logo; musik resolve hangat | **Tim MANIS 🍯 atau TAWAR 🍵?** · ikon 💬 komentar & ❤️ like beranimasi · **RoyalPiggy-ID** |
 
 ## 4–5. Prompt gambar & animasi (Omni Flash 1.2, text-to-video, 9:16, 1080p)
 Gaya tetap untuk semua adegan: *cinematic historical paper diorama, layered textured paper with visible fibres and cut edges, soft drop shadows, pop-up book parallax, tilt-shift depth of field, warm volumetric light, teal–jade–gold–crimson palette, film grain, premium documentary look, no text, no voice.* Frame terakhir adegan 1 dipakai sebagai referensi gaya untuk adegan 2–5.
@@ -40,11 +41,11 @@ Orkestra sinematik ringan: guzheng di awal, perkusi masuk di adegan 3, tegang di
 Kata-per-kata, putih tebal dengan outline gelap, di area aman tengah-bawah; kata kunci (kaisar, uang, 1848, mata-mata) berwarna emas.
 
 ## 9. CTA
-"Kamu tim teh manis? Tulis di komentar, dan ikuti RoyalPiggy-ID."
+"Kamu tim teh manis atau tawar? Tulis di komentar, like, dan ikuti RoyalPiggy-ID!" Di layar muncul polling visual dua gelas (manis vs tawar), ikon komentar & like yang berdenyut, lalu logo RoyalPiggy-ID. Pin komentar pertama: "Tim manis ketik 🍯, tim tawar ketik 🍵. Mana yang menang?"
 
 ## 10. Judul, deskripsi, hashtag
 - Judul Shorts: **Teh Pernah Dicuri Mata-Mata?! 🍵 #shorts**
-- Deskripsi: Dari legenda Kaisar Shen Nong, bata teh yang dipakai sebagai uang, sampai aksi spionase Robert Fortune tahun 1848. Begini perjalanan teh dari istana ke gelas es teh manismu. Ikuti RoyalPiggy-ID untuk sejarah singkat lainnya.
+- Deskripsi: Dari legenda Kaisar Shen Nong, bata teh yang dipakai sebagai uang, sampai aksi spionase Robert Fortune tahun 1848. Begini perjalanan teh dari istana ke gelas es teh manismu. Kamu tim teh manis atau tawar? Tulis di komentar dan jangan lupa like! Ikuti RoyalPiggy-ID untuk sejarah singkat lainnya.
 - Hashtag: #sejarah #teh #faktaunik #edukasi #sejarahdunia #tehmanis #fyp #shorts #RoyalPiggyID
 
 ## Catatan fakta
