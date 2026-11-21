@@ -14,6 +14,7 @@ from functools import lru_cache
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageOps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+SUBTITLE = False  # takarir per kata dimatikan (permintaan user); True untuk menyalakan
 ROOT = os.path.join(HERE, "..")
 W, H, FPS = 1080, 1920, 30
 P = lambda *a: os.path.join(ROOT, *a)
@@ -507,7 +508,8 @@ def render(t):
     else:
         world_panel(im, t)
     timeline(im, t)
-    captions(im, t)
+    if SUBTITLE:
+        captions(im, t)
     return im.convert("RGB")
 
 
@@ -577,7 +579,46 @@ def contoh():
     sheet.save(os.path.join(out, "storyboard.png"))
 
 
+def _render_part(args):
+    k, f0, f1, path = args
+    ff = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+                           "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "17",
+                           "-pix_fmt", "yuv420p", path], stdin=subprocess.PIPE)
+    for f in range(f0, f1):
+        ff.stdin.write(render(f / FPS).tobytes())
+        if k == 0 and f % 60 == 0:
+            print(f"  bagian 1: {f - f0}/{f1 - f0} frame", flush=True)
+    ff.stdin.close(); ff.wait()
+    return path
+
+
+def render_video(out):
+    from multiprocessing import Pool
+    tmp = os.path.join(HERE, "render"); os.makedirs(tmp, exist_ok=True)
+    n = round(END * FPS); parts = 4
+    jobs = [(k, n * k // parts, n * (k + 1) // parts, os.path.join(tmp, f"peta_{k}.mp4")) for k in range(parts)]
+    with Pool(parts) as pool:
+        paths = pool.map(_render_part, jobs)
+    lst = os.path.join(tmp, "peta_list.txt")
+    open(lst, "w").write("".join(f"file '{p}'\n" for p in paths))
+    video = os.path.join(tmp, "peta_video.mp4")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", video], check=True)
+    cfg = json.load(open(os.path.join(HERE, "scenes.json")))
+    vo, mu = os.path.join(HERE, cfg["voiceover"]["file"]), os.path.join(HERE, cfg["music"]["file"])
+    vlen = n / FPS
+    af = ("[1:a]aresample=48000,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,apad[vo];"
+          "[2:a]aresample=48000,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,"
+          f"volume={cfg['music']['volume_db']}dB,apad,afade=t=out:st={vlen - 2:.2f}:d=2[mu];"
+          "[vo][mu]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000[a]")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", video, "-i", vo, "-i", mu, "-filter_complex", af,
+                    "-map", "0:v", "-map", "[a]", "-t", f"{vlen:.3f}", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+                    "-movflags", "+faststart", out], check=True)
+    print("selesai:", out)
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "contoh"
     if cmd == "contoh":
         contoh()
+    elif cmd == "render":
+        render_video(sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "RunManhattan_gaya_peta_9x16.mp4"))
