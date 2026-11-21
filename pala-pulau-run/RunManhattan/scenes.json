@@ -24,7 +24,10 @@
   "music": {
     "file": "assets/music.mp3",
     "optional": true,
-    "volume_db": -20
+    "volume_db": -15,
+    "elevenlabs_generation_id": "F91zrMMmVl07e2IFsCgb",
+    "model": "eleven_music_v2_5",
+    "note": "Musik & voiceover dinormalkan ke -16 LUFS, musik -15 dB di bawah suara, campuran akhir -14 LUFS."
   },
   "elevenlabs_flow": "https://elevenlabs.io/app/flows/whkJoQOB0gx4AH4TJgJr",
   "scenes": [

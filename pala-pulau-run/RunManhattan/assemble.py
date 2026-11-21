@@ -61,12 +61,19 @@ def build_scene(sc, dur, tmp):
                      f"zoompan=z='{z}':x='{x}':y='{y}':d={frames}:s={W}x{H}:fps={FPS},setsar=1[base]")
     else:
         clip = duration(src)
-        slow = min(1.6, max(1.0, dur / clip))           # slow down up to 1.6x, then hold last frame
-        pad = max(0.0, dur - clip * slow)
         inputs += ["-i", src]
-        chain.append(f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS},"
-                     f"setpts={slow:.4f}*PTS,tpad=stop_mode=clone:stop_duration={pad + 0.1:.3f},"
-                     f"trim=duration={dur:.3f},setpts=PTS-STARTPTS,setsar=1[base]")
+        if dur > clip * 1.6:
+            # too long even at 1.6x: play forward then backward (ping-pong), each half slowed
+            slow = (dur / 2) / clip
+            chain.append(f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+                         f"split[fw][r0];[r0]reverse[bw];[fw][bw]concat=n=2:v=1,"
+                         f"setpts={slow:.4f}*PTS,fps={FPS},tpad=stop_mode=clone:stop_duration=0.2,"
+                         f"trim=duration={dur:.3f},setpts=PTS-STARTPTS,setsar=1[base]")
+        else:
+            slow = max(1.0, dur / clip)                  # slow down to fill the scene
+            chain.append(f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS},"
+                         f"setpts={slow:.4f}*PTS,tpad=stop_mode=clone:stop_duration=0.2,"
+                         f"trim=duration={dur:.3f},setpts=PTS-STARTPTS,setsar=1[base]")
     last = "base"
     if kw and os.path.exists(os.path.join(HERE, kw["overlay"])):
         ov, cx, cy = crop_overlay(os.path.join(HERE, kw["overlay"]), tmp)
@@ -116,12 +123,18 @@ def main():
         vlen = duration(video)
         music = os.path.join(HERE, cfg["music"]["file"])
         inputs = ["-i", video, "-i", vo]
+        # voiceover dinormalkan ke -16 LUFS; musik dinormalkan juga lalu diturunkan volume_db di bawah suara;
+        # hasil campuran akhirnya -14 LUFS (standar TikTok/Shorts/Reels)
+        vo_chain = "[1:a]aresample=48000,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,apad"
+        final = "loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000"
         if os.path.exists(music):
             inputs += ["-stream_loop", "-1", "-i", music]
-            af = (f"[1:a]aresample=48000,apad[vo];[2:a]aresample=48000,volume={cfg['music']['volume_db']}dB,"
-                  f"afade=t=out:st={max(0, vlen - 2):.2f}:d=2[mu];[vo][mu]amix=inputs=2:duration=first:normalize=0[a]")
+            af = (f"{vo_chain}[vo];[2:a]aresample=48000,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,"
+                  f"volume={cfg['music']['volume_db']}dB,"
+                  f"afade=t=out:st={max(0, vlen - 2):.2f}:d=2[mu];[vo][mu]amix=inputs=2:duration=first:normalize=0,"
+                  f"{final}[a]")
         else:
-            af = "[1:a]aresample=48000,apad[a]"
+            af = f"{vo_chain},{final}[a]"
         run(["ffmpeg", "-y", "-v", "error", *inputs, "-filter_complex", af, "-map", "0:v", "-map", "[a]",
              "-t", f"{vlen:.3f}", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", a.out])
         print(f"done: {a.out} ({duration(a.out):.2f}s)")
