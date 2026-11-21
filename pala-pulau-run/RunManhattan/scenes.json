@@ -62,7 +62,7 @@
       "start": 6.85,
       "end": 12.42,
       "narration": "But here's the catch: Europe was obsessed. They even thought it cured the plague. Whoever owned Banda named the price.",
-      "asset": "assets/scene3.png",
+      "asset": "assets/scene3_crop.png",
       "asset_type": "image",
       "motion": "pan_up",
       "elevenlabs": {
@@ -77,12 +77,31 @@
         "at": 1.28,
         "hold": 2.2
       },
-      "sfx": "Coin clinks, scale creak, waves and sails."
+      "sfx": "Coin clinks, scale creak, waves and sails.",
+      "note": "Gambar timbangan asli dipotong ke sisi kanan (koin & kapal) supaya biji pala di piring kiri tidak terlihat. Edit kantong beludru (C7FaMVCUNaMnSWtHGTm2) gagal: keluar 16:9 & kantong tidak tampak."
+    },
+    {
+      "n": 9,
+      "name": "Banda Islands",
+      "start": 12.42,
+      "end": 19.78,
+      "narration": "Four hundred years ago, it grew almost only in Indonesia's Banda Islands. Whoever owned Banda named the price.",
+      "asset": "assets/scene9_banda.png",
+      "asset_type": "image",
+      "motion": "pan_wide",
+      "elevenlabs": {
+        "image": "NoyhTdJuzFjq5uRnv5AN"
+      },
+      "image_prompt": "The Banda Islands as a miniature diorama at sunrise: small green volcano, kenari-tree islands, turquoise lagoon, European tall ships approaching on the horizon. No fruit visible, no flags.",
+      "sfx": "Waves, distant gulls, creaking sails.",
+      "pan_from": 0.0,
+      "pan_to": 0.62,
+      "note": "Gambar keluar 16:9 (rasio bawaan node); dipakai sebagai pan horizontal dari kapal ke gunung api."
     },
     {
       "n": 4,
       "name": "Run Chose England",
-      "start": 12.42,
+      "start": 19.78,
       "end": 25.91,
       "narration": "The Dutch wanted every tree. But one tiny island, Pulau Run, chose England.",
       "asset": "assets/scene4.png",
@@ -96,7 +115,7 @@
       "keyword": {
         "overlay": "overlays/Scene04_text_Bangers.png",
         "text": "PULAU RUN",
-        "at": 11.04,
+        "at": 3.68,
         "hold": 2.0
       },
       "sfx": "Flag pops, gentle drum, flag flap."

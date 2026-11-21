@@ -54,7 +54,13 @@ def build_scene(sc, dur, tmp):
     frames = max(1, round(dur * FPS))
     kw = sc.get("keyword")
     inputs, chain = [], []
-    if sc["asset_type"] == "image":
+    if sc["asset_type"] == "image" and sc.get("motion", "").startswith("pan_wide"):
+        # gambar lebar (16:9): jendela 9:16 bergeser horizontal dari pan_from ke pan_to (0..1)
+        p0, p1 = sc.get("pan_from", 0.0), sc.get("pan_to", 1.0)
+        inputs += ["-loop", "1", "-framerate", str(FPS), "-t", f"{dur:.3f}", "-i", src]
+        chain.append(f"[0:v]scale=-2:{H},crop=w={W}:h={H}:"
+                     f"x='(iw-ow)*({p0}+({p1}-{p0})*t/{dur:.3f})':y=0,setsar=1[base]")
+    elif sc["asset_type"] == "image":
         z, x, y = (e.format(d=frames) for e in MOTIONS.get(sc.get("motion", "zoom_in"), MOTIONS["zoom_in"]))
         inputs += ["-loop", "1", "-framerate", str(FPS), "-t", f"{dur:.3f}", "-i", src]
         chain.append(f"[0:v]scale={W*2}:{H*2}:force_original_aspect_ratio=increase,crop={W*2}:{H*2},"

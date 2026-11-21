@@ -42,8 +42,8 @@ def span(first, last):
 ORDER = [
     (1, [("The Dutch gave", "for this."), ("And the real", "even crazier.")]),
     (3, [("But here's the catch", "was obsessed."), ("They even thought", "the plague.")]),
-    (4, [("Four hundred years", "Banda Islands."), ("Whoever owned Banda", "the price."),
-         ("The Dutch wanted", "every tree."), ("But one tiny", "chose England.")]),
+    (9, [("Four hundred years", "Banda Islands."), ("Whoever owned Banda", "the price.")]),
+    (4, [("The Dutch wanted", "every tree."), ("But one tiny", "chose England.")]),
     (2, [("This is nutmeg", "your kitchen.")]),
     (5, [("Then it got", "its people.")]),
     (6, [("And here's where", "comes in."), ("In 1664,", "renamed it New York.")]),
@@ -54,6 +54,7 @@ ORDER = [
 KEY = {1: "for this.", 3: "Europe was", 4: "Pulau Run,", 2: "nutmeg,", 5: "under siege",
        6: "1664,", 7: "1667,", 8: "Run or"}
 GAP_SCENE = 0.25  # jeda tambahan di pergantian scene
+NO_GAP_AFTER = {9}  # scene Banda 9 -> 4 satu alur, tanpa jeda tambahan
 
 pieces, t, bounds, kw_abs = [], 0.0, {}, {}
 for n, sents in ORDER:
@@ -62,14 +63,14 @@ for n, sents in ORDER:
         i, j, a, b = span(f, l)
         # waktu kata kunci (absolut di timeline baru)
         try:
-            ki, _ = find(KEY[n], i)
+            ki, _ = find(KEY[n], i)  # KeyError bila scene tanpa kata kunci
             if ki <= j and n not in kw_abs:
                 kw_abs[n] = t + (words[ki]["start"] - a)
-        except SystemExit:
+        except (SystemExit, KeyError):
             pass
         pieces.append((a, b))
         t += b - a
-    if n != ORDER[-1][0]:
+    if n != ORDER[-1][0] and n not in NO_GAP_AFTER:
         pieces.append((None, GAP_SCENE)); t += GAP_SCENE
     bounds[n] = (t0, t)
 
@@ -98,9 +99,10 @@ for n, _ in ORDER:
     s = by_n[n]
     a, b = bounds[n]
     s["start"], s["end"] = round(a, 3), round(b, 3)
-    at = kw_abs[n] - a
-    s["keyword"]["at"] = round(at, 2)
-    s["keyword"]["hold"] = round(min(s["keyword"].get("hold", 2.2), b - a - at - 0.05), 2)
+    if n in kw_abs and s.get("keyword"):
+        at = kw_abs[n] - a
+        s["keyword"]["at"] = round(at, 2)
+        s["keyword"]["hold"] = round(min(s["keyword"].get("hold", 2.2), b - a - at - 0.05), 2)
     new.append(s)
 cfg["scenes"] = new
 cfg["voiceover"]["file"] = "assets/voiceover.wav"
@@ -108,5 +110,5 @@ cfg["voiceover"]["note"] = ("Disusun ulang oleh make_voiceover.py dari take qCRd
                             "buah pala diungkap di tengah cerita. Render dengan --no-scale.")
 json.dump(cfg, open(os.path.join(HERE, "scenes.json"), "w"), indent=2, ensure_ascii=False)
 for s in new:
-    print(f"scene {s['n']}: {s['start']:6.2f}-{s['end']:6.2f}  {s['keyword']['text']!r} @ "
-          f"{s['start'] + s['keyword']['at']:.2f}s  ({s['asset']})")
+    kw = f"{s['keyword']['text']!r} @ {s['start'] + s['keyword']['at']:.2f}s" if s.get("keyword") else "(tanpa teks)"
+    print(f"scene {s['n']}: {s['start']:6.2f}-{s['end']:6.2f}  {kw}  ({s['asset']})")
