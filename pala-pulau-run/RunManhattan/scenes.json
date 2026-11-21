@@ -11,14 +11,14 @@
   "style": "Whimsical 3D cinematic animation",
   "master_style_prompt": "Whimsical 3D cinematic animation, vertical 9:16, 1080x1920, 24 fps. A stylized storybook world at miniature tilt-shift scale: soft rounded shapes, handcrafted clay, wood and paper textures, warm golden-hour global illumination, volumetric light rays, shallow depth of field, rich saturated tropical colors (turquoise sea, emerald jungle, nutmeg yellow, mace crimson), subtle film grain, smooth cinematic camera moves. Nutmeg fruits are hero props with hyper-detailed realistic textures. No text in frame.",
   "voiceover": {
-    "file": "assets/voiceover.mp3",
+    "file": "assets/voiceover.wav",
     "voice": "Mason - Warm Documentary Narrator (ElevenLabs voice_id 1Mx54eW85zYpnx1WfIdU)",
     "model": "eleven_v4",
     "elevenlabs_generation_ids": [
       "QzEiGvrCrexpfh0cLDOX",
       "qCRdJ2P7IN2cJamLHzpD"
     ],
-    "note": "Take qCRdJ2P7IN2cJamLHzpD dipakai; start/end & keyword.at disetel dari transkrip, render dengan --no-scale.",
+    "note": "Disusun ulang oleh make_voiceover.py dari take qCRdJ2P7IN2cJamLHzpD: buah pala diungkap di tengah cerita. Render dengan --no-scale.",
     "chosen_take": "qCRdJ2P7IN2cJamLHzpD"
   },
   "music": {
@@ -34,10 +34,10 @@
     {
       "n": 1,
       "name": "Hook",
-      "start": 0,
-      "end": 6.72,
+      "start": 0.0,
+      "end": 6.85,
       "narration": "The Dutch gave up New York… for this. And the real story is even crazier.",
-      "asset": "assets/scene1.png",
+      "asset": "assets/scene1_globe.png",
       "asset_type": "image",
       "elevenlabs": {
         "video_kling": "bYmlKZXM8KtFEkJ8ao30",
@@ -49,18 +49,63 @@
       "keyword": {
         "overlay": "overlays/Scene01_text_Bangers.png",
         "text": "FOR THIS?",
-        "at": 2.36,
+        "at": 2.28,
         "hold": 2.4
       },
       "sfx": "Cinematic boom on frame 1, sparkle shimmer, whoosh at 'even crazier'.",
       "motion": "zoom_in",
-      "note": "Klip Kling bYmlKZXM8KtFEkJ8ao30 memunculkan batang kaca aneh dari buah pala mulai ±1,7 s; sementara pakai gambar diam KDBeKhLJO0lghEDUNDcl."
+      "note": "Hook memakai gambar globe penutup (P1LYqW89TjmTfutZUI73): buah pala kecil & tertutup, supaya belum terungkap. Klip Kling bYmlKZXM8KtFEkJ8ao30 punya artefak batang kaca."
+    },
+    {
+      "n": 3,
+      "name": "Worth a Fortune",
+      "start": 6.85,
+      "end": 12.42,
+      "narration": "But here's the catch: Europe was obsessed. They even thought it cured the plague. Whoever owned Banda named the price.",
+      "asset": "assets/scene3.png",
+      "asset_type": "image",
+      "motion": "pan_up",
+      "elevenlabs": {
+        "image": "lsfQyQc5oXMXTOFAxrQc",
+        "photo_reference_scale": "WG1eL45RsKEaeaAXGrCR"
+      },
+      "image_prompt": "A cozy 17th-century European merchant's study lit by candles: on a wooden desk an antique brass balance scale where a single glossy nutmeg seed outweighs a pile of gold coins, coins playfully bouncing. Behind it, a tiny wooden toy sailing ship glides across an old parchment map of the East Indies.",
+      "video_prompt": "Candle flames flicker, the scale tips down toward the nutmeg, gold coins bounce, the toy ship glides across the map; slow dolly-in.",
+      "keyword": {
+        "overlay": "overlays/Scene03_text_Bangers.png",
+        "text": "A FORTUNE",
+        "at": 1.28,
+        "hold": 2.2
+      },
+      "sfx": "Coin clinks, scale creak, waves and sails."
+    },
+    {
+      "n": 4,
+      "name": "Run Chose England",
+      "start": 12.42,
+      "end": 25.91,
+      "narration": "The Dutch wanted every tree. But one tiny island, Pulau Run, chose England.",
+      "asset": "assets/scene4.png",
+      "asset_type": "image",
+      "motion": "zoom_in_left",
+      "elevenlabs": {
+        "image": "BMIyYDaWu3B6RQX4jKyS"
+      },
+      "image_prompt": "A miniature diorama of the Banda Islands floating on a glowing turquoise sea: several small green volcanic islands topped with tiny 17th-century Dutch orange-white-blue flags, toy-like Dutch sailing ships circling. In the foreground, one very small island, Pulau Run, covered in nutmeg trees, proudly raising a tiny white flag with a red St George's Cross. High-angle tilt-shift view.",
+      "video_prompt": "Tilt-shift camera slowly tilts down; tiny Dutch flags pop up island by island, then the English flag rises on little Pulau Run.",
+      "keyword": {
+        "overlay": "overlays/Scene04_text_Bangers.png",
+        "text": "PULAU RUN",
+        "at": 11.04,
+        "hold": 2.0
+      },
+      "sfx": "Flag pops, gentle drum, flag flap."
     },
     {
       "n": 2,
       "name": "This Is Nutmeg",
-      "start": 6.72,
-      "end": 15.067,
+      "start": 25.91,
+      "end": 29.68,
       "narration": "This is nutmeg, yes, the one in your kitchen. Four hundred years ago, it grew almost only in Indonesia's Banda Islands.",
       "asset": "assets/scene2.png",
       "asset_type": "image",
@@ -75,61 +120,16 @@
       "keyword": {
         "overlay": "overlays/Scene02_text_Bangers.png",
         "text": "NUTMEG",
-        "at": 0.64,
+        "at": 0.68,
         "hold": 2.2
       },
       "sfx": "Leaves rustling, tropical birds, soft crack."
     },
     {
-      "n": 3,
-      "name": "Worth a Fortune",
-      "start": 15.067,
-      "end": 22.907,
-      "narration": "But here's the catch: Europe was obsessed. They even thought it cured the plague. Whoever owned Banda named the price.",
-      "asset": "assets/scene3.png",
-      "asset_type": "image",
-      "motion": "pan_up",
-      "elevenlabs": {
-        "image": "lsfQyQc5oXMXTOFAxrQc",
-        "photo_reference_scale": "WG1eL45RsKEaeaAXGrCR"
-      },
-      "image_prompt": "A cozy 17th-century European merchant's study lit by candles: on a wooden desk an antique brass balance scale where a single glossy nutmeg seed outweighs a pile of gold coins, coins playfully bouncing. Behind it, a tiny wooden toy sailing ship glides across an old parchment map of the East Indies.",
-      "video_prompt": "Candle flames flicker, the scale tips down toward the nutmeg, gold coins bounce, the toy ship glides across the map; slow dolly-in.",
-      "keyword": {
-        "overlay": "overlays/Scene03_text_Bangers.png",
-        "text": "A FORTUNE",
-        "at": 5.33,
-        "hold": 2.2
-      },
-      "sfx": "Coin clinks, scale creak, waves and sails."
-    },
-    {
-      "n": 4,
-      "name": "Run Chose England",
-      "start": 22.907,
-      "end": 28.8,
-      "narration": "The Dutch wanted every tree. But one tiny island, Pulau Run, chose England.",
-      "asset": "assets/scene4.png",
-      "asset_type": "image",
-      "motion": "zoom_in_left",
-      "elevenlabs": {
-        "image": "BMIyYDaWu3B6RQX4jKyS"
-      },
-      "image_prompt": "A miniature diorama of the Banda Islands floating on a glowing turquoise sea: several small green volcanic islands topped with tiny 17th-century Dutch orange-white-blue flags, toy-like Dutch sailing ships circling. In the foreground, one very small island, Pulau Run, covered in nutmeg trees, proudly raising a tiny white flag with a red St George's Cross. High-angle tilt-shift view.",
-      "video_prompt": "Tilt-shift camera slowly tilts down; tiny Dutch flags pop up island by island, then the English flag rises on little Pulau Run.",
-      "keyword": {
-        "overlay": "overlays/Scene04_text_Bangers.png",
-        "text": "PULAU RUN",
-        "at": 3.65,
-        "hold": 2.0
-      },
-      "sfx": "Flag pops, gentle drum, flag flap."
-    },
-    {
       "n": 5,
       "name": "Then It Got Ugly",
-      "start": 28.8,
-      "end": 40.96,
+      "start": 29.68,
+      "end": 42.097,
       "narration": "Then it got ugly. Captain Nathaniel Courthope held Run under siege for four years, until he was killed. In 1621, the Dutch took Banda, at a terrible cost to its people.",
       "asset": "assets/scene5.mp4",
       "asset_type": "video",
@@ -142,7 +142,7 @@
       "keyword": {
         "overlay": "overlays/Scene05_text_Bangers.png",
         "text": "UNDER SIEGE",
-        "at": 3.84,
+        "at": 3.88,
         "hold": 2.4
       },
       "sfx": "Rain, distant cannon rumble, music drops to a minor pad.",
@@ -151,8 +151,8 @@
     {
       "n": 6,
       "name": "Here's Where New York Comes In",
-      "start": 40.96,
-      "end": 48.267,
+      "start": 42.097,
+      "end": 49.66,
       "narration": "And here's where New York comes in. In 1664, England seized Dutch New Amsterdam and renamed it New York.",
       "asset": "assets/scene6.png",
       "asset_type": "image",
@@ -165,7 +165,7 @@
       "keyword": {
         "overlay": "overlays/Scene06_text_Bangers.png",
         "text": "1664",
-        "at": 2.28,
+        "at": 2.31,
         "hold": 2.2
       },
       "sfx": "Long whoosh, stamp thud on 1664, light city ambience, music lifts."
@@ -173,8 +173,8 @@
     {
       "n": 7,
       "name": "The Deal of 1667",
-      "start": 48.267,
-      "end": 55.92,
+      "start": 49.66,
+      "end": 57.57,
       "narration": "In 1667, the Treaty of Breda let both sides keep what they held. The Dutch kept Run. England kept Manhattan.",
       "asset": "assets/scene7.png",
       "asset_type": "image",
@@ -187,7 +187,7 @@
       "keyword": {
         "overlay": "overlays/Scene07_text_Bangers.png",
         "text": "1667",
-        "at": 0.17,
+        "at": 0.2,
         "hold": 2.4
       },
       "sfx": "Paper slide, wax seal squish, stamp thud, orchestral hit."
@@ -195,8 +195,8 @@
     {
       "n": 8,
       "name": "Twist & CTA",
-      "start": 55.92,
-      "end": 62.8,
+      "start": 57.57,
+      "end": 64.63,
       "narration": "Not a straight swap… but a spice decided New York's fate. Run or Manhattan: which would you keep?",
       "asset": "assets/scene8.mp4",
       "asset_type": "video",
@@ -209,7 +209,7 @@
       "keyword": {
         "overlay": "overlays/Scene08_text_Bangers.png",
         "text": "RUN OR MANHATTAN?",
-        "at": 3.84,
+        "at": 3.86,
         "hold": 2.99
       },
       "sfx": "Cinematic impact, soft pop for the question, upbeat outro. End on the nutmeg for a seamless loop."

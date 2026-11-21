@@ -128,9 +128,9 @@ def main():
         vo_chain = "[1:a]aresample=48000,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,apad"
         final = "loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000"
         if os.path.exists(music):
-            inputs += ["-stream_loop", "-1", "-i", music]
+            inputs += ["-i", music]  # tidak di-loop: musik dibuat sepanjang video
             af = (f"{vo_chain}[vo];[2:a]aresample=48000,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,"
-                  f"volume={cfg['music']['volume_db']}dB,"
+                  f"volume={cfg['music']['volume_db']}dB,apad,"
                   f"afade=t=out:st={max(0, vlen - 2):.2f}:d=2[mu];[vo][mu]amix=inputs=2:duration=first:normalize=0,"
                   f"{final}[a]")
         else:
