@@ -10,7 +10,7 @@ import {
   Easing,
 } from "remotion";
 import timeline from "./timeline.json";
-import { MapBg, planoScreen } from "./MapBg";
+import { MapBg, planoScreen, project, STORES } from "./MapBg";
 
 /* ---------------- fonts (plain @font-face, local files) ---------------- */
 const FONT_CSS = `
@@ -243,56 +243,75 @@ const Scene1: React.FC<SP> = ({ t }) => {
   );
 };
 
-// 2. 84 stores, 44 closed, 1,600 workers
+// 2. 84 stores pop up on the map, 44 close, 1,600 workers
+const StorePin: React.FC<{ dead: number }> = ({ dead }) => (
+  <svg width={46} height={58} viewBox="0 0 46 58" style={{ overflow: "visible" }}>
+    <path d="M23 56 C23 56 4 34 4 22 A19 19 0 0 1 42 22 C42 34 23 56 23 56 Z" fill={dead > 0.5 ? "#55504A" : C.white} stroke={C.ink} strokeWidth={4} />
+    <path d="M11 20 L14 12 L32 12 L35 20 Z" fill={dead > 0.5 ? "#7A746B" : C.red} stroke={C.ink} strokeWidth={2.5} strokeLinejoin="round" />
+    <rect x={14} y={20} width={18} height={11} fill={dead > 0.5 ? "#8E877B" : C.yellow} stroke={C.ink} strokeWidth={2.5} />
+    {dead > 0.5 && <path d="M10 8 L36 36 M36 8 L10 36" stroke="#ff2a2a" strokeWidth={7} strokeLinecap="round" style={{ filter: "drop-shadow(0 0 2px #000)" }} />}
+  </svg>
+);
+
+const WorkerBadge: React.FC<{ color: string }> = ({ color }) => (
+  <svg width={44} height={44} viewBox="0 0 44 44">
+    <circle cx={22} cy={22} r={20} fill={color} stroke={C.ink} strokeWidth={3.5} />
+    <circle cx={22} cy={16} r={7} fill={C.white} />
+    <path d="M9 36 Q9 25 22 25 Q35 25 35 36 Z" fill={C.white} />
+  </svg>
+);
+
 const Scene2: React.FC<SP> = ({ t }) => {
   const a2 = local(2, 1), a3 = local(3, 1), a4 = local(4, 1), a5 = local(5, 1);
+  const sAbs = t + SCENES[1];
+  // 128 pins: 84 still open + 44 that already closed this year
   const closed = new Set<number>();
-  for (let i = 0; closed.size < 44; i++) closed.add(Math.floor(random(`c${i}`) * 84));
-  const order = [...closed];
-  const up = ease(t, a4 - 0.1, a4 + 0.35);
-  const count = Math.round(ease(t, a2, a2 + 0.9, 0, 84));
+  for (let i = 0; closed.size < 44; i++) closed.add(Math.floor(random(`c${i}`) * STORES.length));
+  const all = STORES.map((p, i) => ({ ...p, i, dead: closed.has(i) }));
+  const open = all.filter((p) => !p.dead).sort((a, b) => a.lon - b.lon);
+  const gone = all.filter((p) => p.dead).sort((a, b) => b.lat - a.lat);
+  const count = Math.round(ease(t, a2, a2 + 1.0, 0, 84));
+  const deadCount = Math.round(ease(t, a3 + 0.1, a3 + 0.1 + 44 * 0.025, 0, 44));
+  const pin = (p: any, s: number, dead: boolean) => {
+    const [x, y] = project(sAbs, p.lon, p.lat);
+    if (s <= 0.001) return null;
+    return (
+      <div key={p.i} style={{ position: "absolute", left: x, top: y, transform: `translate(-50%,-100%) scale(${s * 1.25}) rotate(${dead ? random(`r${p.i}`) * 30 - 15 : 0}deg)`, transformOrigin: "50% 100%", filter: "drop-shadow(0 4px 3px rgba(0,0,0,0.55))" }}>
+        <StorePin dead={dead ? 1 : 0} />
+      </div>
+    );
+  };
   return (
     <>
-      <div style={{ position: "absolute", left: 0, top: 0, width: 1080, transform: `translateY(${-up * 190}px) scale(${1 - up * 0.22})`, transformOrigin: "540px 300px" }}>
-        <Pop t={t} at={a2 - 0.05} x={540} y={300}>
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            <Slab size={150} bg={C.ink}>{count}</Slab>
-            <div style={{ fontFamily: HEAD, fontSize: 92, color: C.white, lineHeight: 0.95, textShadow: SHADOW }}>STORES<br />AT RISK</div>
+      {open.map((p, k) => pin(p, pop(t, a2 + k * 0.012, 11, 230), false))}
+      {gone.map((p, k) => pin(p, pop(t, a3 + 0.1 + k * 0.025, 9, 260), true))}
+      {/* workers pop up beside the open stores */}
+      {open.filter((_, k) => k % 5 === 0).map((p, k) => {
+        const [x, y] = project(sAbs, p.lon, p.lat);
+        const s = pop(t, a4 + k * 0.05, 10, 220);
+        if (s <= 0.001) return null;
+        const swing = t > a5 ? Math.sin((t - a5) * 9 + k) * 14 * ease(t, a5, a5 + 0.2) : 0;
+        const dx = (random(`wx${k}`) - 0.5) * 70, dy = -95 - random(`wy${k}`) * 30;
+        return (
+          <div key={`w${k}`} style={{ position: "absolute", left: x + dx, top: y + dy, transform: `translate(-50%,-50%) scale(${s * 1.35}) rotate(${swing}deg)`, transformOrigin: "50% -40%", filter: "drop-shadow(0 4px 3px rgba(0,0,0,0.55))" }}>
+            <WorkerBadge color={k % 4 === 1 ? C.red : C.green} />
           </div>
-        </Pop>
-        <div style={{ position: "absolute", left: 60, top: 470, width: 960, display: "flex", flexWrap: "wrap", gap: 16 }}>
-          {Array.from({ length: 84 }).map((_, i) => {
-            const s = pop(t, a2 + i * 0.012, 12, 240);
-            const k = order.indexOf(i);
-            const dead = k >= 0 ? ease(t, a3 + 0.2 + k * 0.03, a3 + 0.25 + k * 0.03) : 0;
-            return (
-              <div key={i} style={{ transform: `scale(${s * (1 - dead * 0.12)}) rotate(${dead * (random(`r${i}`) * 16 - 8)}deg)` }}>
-                <Store dead={dead} size={64} />
-              </div>
-            );
-          })}
+        );
+      })}
+      <Pop t={t} at={a2 - 0.1} x={540} y={250} rot={-2}>
+        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          <Slab size={140} bg={C.ink}>{count}</Slab>
+          <div style={{ fontFamily: HEAD, fontSize: 86, color: C.white, lineHeight: 0.95, textShadow: SHADOW }}>STORES<br />AT RISK</div>
         </div>
-        <Pop t={t} at={a3 + 0.1} x={540} y={1190} rot={3}>
-          <Slab bg={C.red} size={104}>44 ALREADY CLOSED</Slab>
-        </Pop>
-      </div>
-      {/* workers */}
-      <div style={{ position: "absolute", left: 90, top: 1060, width: 900, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10 }}>
-        {Array.from({ length: 24 }).map((_, i) => {
-          const s = pop(t, a4 + i * 0.02, 12, 240);
-          const swing = t > a5 ? Math.sin((t - a5) * 9 + i) * 10 * ease(t, a5, a5 + 0.2) : 0;
-          return (
-            <div key={i} style={{ transform: `scale(${s}) rotate(${swing}deg)`, transformOrigin: "50% 0%" }}>
-              <Worker size={62} color={i % 5 === 2 ? C.red : C.white} />
-            </div>
-          );
-        })}
-      </div>
-      <Pop t={t} at={a4 + 0.15} x={540} y={1360} rot={-3}>
-        <Slab bg={C.yellow} color={C.ink} size={110}>1,600+ WORKERS</Slab>
       </Pop>
-      <Pop t={t} at={a5} x={900} y={980} rot={12}>
-        <div style={{ fontFamily: HEAD, fontSize: 260, color: C.red, WebkitTextStroke: `8px ${C.ink}`, transform: `rotate(${Math.sin(t * 6) * 8}deg)` }}>?</div>
+      <Pop t={t} at={a3} x={540} y={430} rot={3}>
+        <Slab bg={C.red} size={88}>+{deadCount} ALREADY CLOSED</Slab>
+      </Pop>
+      <Pop t={t} at={a4 + 0.15} x={540} y={1490} rot={-3}>
+        <Slab bg={C.yellow} color={C.ink} size={96}>1,600+ WORKERS</Slab>
+      </Pop>
+      <Pop t={t} at={a5} x={940} y={1250} rot={12}>
+        <div style={{ fontFamily: HEAD, fontSize: 220, color: C.red, WebkitTextStroke: `8px ${C.ink}`, transform: `rotate(${Math.sin(t * 6) * 8}deg)` }}>?</div>
       </Pop>
     </>
   );

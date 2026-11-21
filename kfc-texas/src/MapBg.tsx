@@ -1,7 +1,7 @@
 import React from "react";
 import { Easing, Img, interpolate, staticFile } from "remotion";
 import { feature, mesh } from "topojson-client";
-import { geoPath, geoTransform } from "d3-geo";
+import { geoBounds, geoContains, geoPath, geoTransform } from "d3-geo";
 import us from "us-atlas/states-10m.json";
 import world from "world-atlas/countries-50m.json";
 import timeline from "./timeline.json";
@@ -43,6 +43,9 @@ const e = (s: number, a: number, b: number) =>
 const KEYS: [number, number, number, number][] = [
   [0, -97, 40, 1.45],
   [2.4, -97, 38.5, 1.95],
+  [S(2) + 0.4, -86, 34.2, 4.0],
+  [S(6) - 0.3, -86.3, 34.0, 4.15],
+  [S(6) + 0.6, -96, 37.8, 2.05],
   [S(13), -96, 37.5, 2.1],
   [S(15) - 0.1, -96, 37.5, 2.1],
   [S(15) + 1.1, -99.3, 31.3, 5.0],
@@ -148,3 +151,30 @@ export const planoScreen = (s: number) => {
   const { lon, lat, z } = camera(s);
   return [540 + (PLANO[0] - wx(lon)) * z * SQUEEZE, 960 + (PLANO[1] - wy(lat)) * z];
 };
+
+/* project any lon/lat to screen pixels for the camera at time s */
+export const project = (s: number, lon: number, lat: number) => {
+  const c = camera(s);
+  return [540 + (wx(lon) - wx(c.lon)) * c.z * SQUEEZE, 960 + (wy(lat) - wy(c.lat)) * c.z];
+};
+
+/* 84 store locations spread across the franchisee's 10 states (illustrative positions) */
+let seed = 1234567;
+const rnd = () => {
+  seed = (seed * 1664525 + 1013904223) % 4294967296;
+  return seed / 4294967296;
+};
+const PER_STATE = [13, 12, 13, 12, 13, 13, 13, 12, 13, 14]; // = 128 (84 open + 44 closed)
+export const STORES: { lon: number; lat: number; state: string }[] = [];
+OPS.forEach((o, i) => {
+  const f = states.find((x) => x.id === o.id);
+  const [[x0, y0], [x1, y1]] = geoBounds(f);
+  let n = 0, guard = 0;
+  while (n < PER_STATE[i] && guard++ < 5000) {
+    const lon = x0 + (x1 - x0) * rnd(), lat = y0 + (y1 - y0) * rnd();
+    if (geoContains(f, [lon, lat])) {
+      STORES.push({ lon, lat, state: o.id });
+      n++;
+    }
+  }
+});
