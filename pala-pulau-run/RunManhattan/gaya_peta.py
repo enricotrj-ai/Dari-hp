@@ -427,12 +427,12 @@ def render(t):
         x, y = cam.xy(-74.0, 40.7)
         pin(im, x, y, "NEW YORK", RED, t, 0.9)
         tf = wt("for", 1)
-        s, a = pop(t, tf, S(3)); paste_fx(im, card("img/s8.png", (470, 600), t - tf), W / 2 + 40, 1240, s, 4, a)
+        s, a = pop(t, tf, S(3)); paste_fx(im, card("RunManhattan/assets/hook_pala_9x16.png", (405, 720), t - tf), W / 2 + 150, 1230, s, 4, a)
         s, a = pop(t, wt("gave", 1) - 0.1, S(3))
         paste_fx(im, sticker_img("THE DUTCH\nGAVE UP NEW YORK…", BLK, WHT, 74), W / 2, 370, s, -3, a)
         s, a = pop(t, tf + 0.2, S(3)); paste_fx(im, sticker_img("FOR THIS?!", RED, WHT, 140), W / 2 - 70, 600, s, -5, a)
         s, a = pop(t, wt("crazier", 1) - 0.2, S(3))
-        paste_fx(im, sticker_img("THE REAL STORY IS\nEVEN CRAZIER", YEL, BLK, 50), 300, 1010, s, -4, a)
+        paste_fx(im, sticker_img("THE REAL STORY IS\nEVEN CRAZIER", YEL, BLK, 50), 260, 1180, s, -4, a)
 
     # ---- 3 Eropa ----
     elif t < S(9):
