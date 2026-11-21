@@ -56,7 +56,7 @@ KEY = {1: "for this.", 3: "Europe was", 4: "Pulau Run,", 2: "nutmeg,", 5: "under
 GAP_SCENE = 0.25  # jeda tambahan di pergantian scene
 NO_GAP_AFTER = {9}  # scene Banda 9 -> 4 satu alur, tanpa jeda tambahan
 
-pieces, t, bounds, kw_abs = [], 0.0, {}, {}
+pieces, t, bounds, kw_abs, new_words = [], 0.0, {}, {}, []
 for n, sents in ORDER:
     t0 = t
     for k, (f, l) in enumerate(sents):
@@ -69,6 +69,9 @@ for n, sents in ORDER:
         except (SystemExit, KeyError):
             pass
         pieces.append((a, b))
+        for w in words[i:j + 1]:  # waktu kata di timeline baru (untuk takarir)
+            new_words.append({"text": w["text"], "start": round(t + w["start"] - a, 3),
+                              "end": round(t + w["end"] - a, 3), "scene": n})
         t += b - a
     if n != ORDER[-1][0] and n not in NO_GAP_AFTER:
         pieces.append((None, GAP_SCENE)); t += GAP_SCENE
@@ -90,6 +93,8 @@ for k, (a, b) in enumerate(pieces):
 fc.append("".join(labels) + f"concat=n={len(labels)}:v=0:a=1,apad=pad_dur={TAIL}[out]")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", SRC, "-filter_complex", ";".join(fc),
                 "-map", "[out]", "-ac", "1", "-ar", "44100", OUT], check=True)
+
+json.dump(new_words, open(os.path.join(HERE, "words_timeline.json"), "w"), indent=1)
 
 # perbarui scenes.json: urutkan scene sesuai urutan baru
 cfg = json.load(open(os.path.join(HERE, "scenes.json")))
