@@ -15,13 +15,13 @@ canvas{display:block}
 <script>
 // ================= TIMELINE (video seconds; voiceover starts at 1.0 s) =================
 const T={DUR:40,
-  hook:1.0, fever:2.4, drench:3.8, pacific:5.3,
-  normal:6.6, wind:7.2, pool:8.4, upwell:9.8,
-  weaken:11.8, slosh:13.0, stop:14.3, loop:999, nino:15.5,
-  heatAir:999, spike:16.8, amer:18.6, dryAus:19.9,
-  runout:21.8, surge:23.2, strong:24.4, nina:25.6,
-  ninaFlood:27.2, ninaDry:29.0,
-  cycle:31.2, cycleText:33.6,
+  hook:1.0, fever:2.4, drench:3.6, pacific:4.7,
+  normal:6.1, wind:6.6, pool:7.9, upwell:9.4,
+  weaken:11.6, slosh:13.2, stop:14.9, loop:999, nino:17.0,
+  heatAir:999, spike:18.0, amer:19.9, dryAus:21.2,
+  runout:23.0, surge:24.5, strong:26.0, nina:27.7,
+  ninaFlood:28.6, ninaDry:30.5,
+  cycle:32.7, cycleText:34.4,
   pend:999, pendEnd:999};
 const COL={ink:'#F6F3EC',muted:'#9AA8C4',yellow:'#FFD233',warm:'#FF6A2A',red:'#E8341C',cool:'#3D8BFF',ice:'#8FD3FF',navy:'#0A1530'};
 
@@ -407,7 +407,7 @@ function hud(t,proj){
   // hook
   headline(t,T.fever-.4,T.drench-.4,330,[{s:'A planet',style:'plain'},{s:'with a fever',style:'boxWarm'}],80);
   headline(t,T.drench-.4,T.pacific-.2,330,[{s:'then',style:'plain'},{s:'drenched',style:'boxCool'}],88);
-  headline(t,T.pacific-.2,T.normal-.2,300,[{s:'It starts in',style:'plain'}],70);
+  headline(t,T.pacific-.2,T.normal-.2,300,[{s:'Blame',style:'plain'}],70);
   headline(t,T.pacific+.1,T.normal-.2,420,[{s:'the Pacific',style:'box'}],94);
   // normal
   kicker(t,T.normal,T.weaken-.2,265,'A NORMAL YEAR');
