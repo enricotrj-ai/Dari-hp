@@ -1,0 +1,430 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:I;font-weight:500;src:url(file:///usr/share/fonts/opentype/inter/Inter-Medium.otf)}
+@font-face{font-family:I;font-weight:700;src:url(file:///usr/share/fonts/opentype/inter/Inter-Bold.otf)}
+@font-face{font-family:I;font-weight:800;src:url(file:///usr/share/fonts/opentype/inter/Inter-ExtraBold.otf)}
+@font-face{font-family:D;font-weight:800;src:url(file:///usr/share/fonts/opentype/inter/InterDisplay-Bold.otf)}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#050B1C}
+canvas{display:block}
+</style>
+<script src="node_modules/d3-array/dist/d3-array.min.js"></script>
+<script src="node_modules/d3-geo/dist/d3-geo.min.js"></script>
+<script src="node_modules/topojson-client/dist/topojson-client.min.js"></script>
+</head><body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// ================= TIMELINE (video seconds; voiceover starts at 1.0 s) =================
+const T={DUR:57,
+  hook:1.0, drought:2.5, flood:4.3, answer:6.2, pacific:7.4, open:7.2,
+  normal:9.0, wind:9.9, pool:12.7, evap:16.3, cloud:17.4, rain:18.8,
+  nino:20.8, ninoWeak:22.2, ninoDrift:23.9, ninoCloud:27.3, result:29.2,
+  c1:30.2, c2:31.7, c3:32.8, c4:33.5,
+  pend:35.0, pendEnd:37.3,
+  ninaWind:37.5, ninaPile:39.4, ninaEvap:42.2, ninaCloud:43.5, ninaRain:44.65,
+  nina:45.9, floods:47.6, slides:48.6,
+  cycle:50.1, cycleText:52.9};
+const COL={ink:'#F6F3EC',muted:'#9AA8C4',yellow:'#FFD233',warm:'#FF6A2A',red:'#E8341C',cool:'#3D8BFF',ice:'#8FD3FF',navy:'#0A1530'};
+
+// ================= helpers =================
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,k)=>a+(b-a)*k;
+const P=(t,a,d)=>clamp((t-a)/d);
+const eo=k=>1-Math.pow(1-k,3), eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+const back=k=>{const c=1.6;return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2)};
+const ss=(a,b,x)=>{const k=clamp((x-a)/(b-a));return k*k*(3-2*k)};
+const D2R=Math.PI/180;
+function hex(h){return [1,3,5].map(i=>parseInt(h.substr(i,2),16))}
+function mix(a,b,k){const A=hex(a),B=hex(b);return 'rgb('+A.map((v,i)=>Math.round(lerp(v,B[i],k))).join(',')+')'}
+// 3D value noise (seamless on the sphere)
+function h3(x,y,z){let n=Math.sin(x*127.1+y*311.7+z*74.7)*43758.5453;return n-Math.floor(n)}
+function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+  const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);let r=0;
+  for(let dx=0;dx<2;dx++)for(let dy=0;dy<2;dy++)for(let dz=0;dz<2;dz++){
+    r+=h3(xi+dx,yi+dy,zi+dz)*(dx?u:1-u)*(dy?v:1-v)*(dz?w:1-w);}return r}
+function fbm(x,y,z){return vnoise(x,y,z)*.55+vnoise(x*2.1,y*2.1,z*2.1)*.3+vnoise(x*4.3,y*4.3,z*4.3)*.15}
+const rnd=i=>{const x=Math.sin(i*91.17+3.3)*43758.5453;return x-Math.floor(x)};
+
+// ================= data =================
+let LAND=null, INDO=null, GRAT=d3.geoGraticule10();
+async function loadData(){
+  const land=await (await fetch('node_modules/world-atlas/land-50m.json')).json();
+  const ctry=await (await fetch('node_modules/world-atlas/countries-50m.json')).json();
+  LAND=topojson.feature(land,land.objects.land);
+  INDO=topojson.feature(ctry,ctry.objects.countries).features.find(f=>f.id==='360');
+}
+
+// ================= ocean state =================
+// L = longitude measured eastward 0..360 (Indonesia ≈118, dateline 180, Peru coast ≈ 280)
+function state(t){
+  const s={};
+  s.poolOn=eo(P(t,T.pool,1.6));
+  s.windOn=eo(P(t,T.wind,1));
+  // warm water position / shape
+  const kd=eio(P(t,T.ninoDrift,3)), kp=eio(P(t,T.ninaPile,2.6));
+  s.Lc=lerp(lerp(148,238,kd),132,kp);
+  s.wid=lerp(lerp(34,62,kd),36,kp);
+  s.amp=lerp(lerp(.75,1.05,kd),1.12,kp);
+  s.cold=eio(P(t,T.ninaPile+.6,2.4));              // cold tongue in the east (La Niña)
+  // winds
+  s.wind=lerp(lerp(1,.15,eio(P(t,T.ninoWeak-.3,1.6))),1.8,eio(P(t,T.ninaWind,1.6)));
+  // convection cluster follows warm water with a lag
+  const kc=eio(P(t,T.ninoCloud-.4,2.4));
+  s.cL=lerp(lerp(140,236,kc),128,eio(P(t,T.ninaPile+.4,2.6)));
+  s.cAmp=eo(P(t,T.cloud,1.4))*lerp(1,1.6,eio(P(t,T.ninaCloud,1.4)));
+  s.cDark=lerp(.0,.6,eio(P(t,T.ninaCloud,1.6)));
+  s.rain=eo(P(t,T.rain,1))*(1-eio(P(t,T.ninoCloud,1.5)))+eio(P(t,T.ninaRain,1))*1.6;
+  s.evap=eo(P(t,T.evap,1))*(1-eio(P(t,T.ninoCloud,1)))+eio(P(t,T.ninaEvap,1))*1.4;
+  // Indonesia ground condition
+  s.dry=eio(P(t,T.result,1.4))*(1-eio(P(t,T.pend,1.5)));
+  s.wet=eio(P(t,T.floods-.3,1.4))*(1-eio(P(t,T.cycle,1)));
+  s.fire=eo(P(t,T.c4,.6))*(1-eo(P(t,T.pend,1)));
+  // hook overrides (zoomed on Indonesia)
+  const hd=eio(P(t,T.drought-.6,1))*(1-eio(P(t,T.flood-.4,.8))), hf=eio(P(t,T.flood-.4,.8))*(1-eio(P(t,T.open,1)));
+  s.dry=Math.max(s.dry,hd); s.wet=Math.max(s.wet,hf); s.hookRain=hf; s.hookFire=hd;
+  // closing: field oscillates El Niño <-> La Niña
+  const kcy=eio(P(t,T.cycle,1.2));
+  if(kcy>0){const ph=(Math.sin((t-T.cycle)*1.3-Math.PI/2)+1)/2; // 0 = La Niña, 1 = El Niño
+    s.Lc=lerp(s.Lc,lerp(132,238,ph),kcy); s.wid=lerp(s.wid,lerp(36,62,ph),kcy); s.cold=lerp(s.cold,1-ph,kcy);
+    s.cL=lerp(s.cL,lerp(128,236,ph),kcy); s.cAmp=lerp(s.cAmp,1.1,kcy); s.cDark=lerp(s.cDark,.2,kcy);
+    s.rain=lerp(s.rain,0,kcy); s.evap=lerp(s.evap,0,kcy); s.wind=lerp(s.wind,lerp(1.6,.3,ph),kcy);}
+  return s;
+}
+
+// ================= camera =================
+function camera(t){
+  // [centerLon, centerLat, radius, centerY]
+  const pac=[-162,2,540,1130], indo=[116,-3,1350,1080];
+  let c=[...pac];
+  const kIn=eio(P(t,T.hook-.2,1.6)), kOut=eio(P(t,T.open,1.8));
+  const k=kIn*(1-kOut);
+  const lonA=pac[0]+360; // 198 -> interpolate towards 116 eastward-free
+  c[0]=lerp(lonA,indo[0],k); c[1]=lerp(pac[1],indo[1],k); c[2]=lerp(pac[2],indo[2],k); c[3]=lerp(pac[3],indo[3],k);
+  // gentle drift: show the east for El Niño, the west for La Niña
+  c[0]+= -12*eio(P(t,T.ninoDrift,3))*(1-eio(P(t,T.pend,2))) + 10*eio(P(t,T.ninaPile,3))*(1-eio(P(t,T.cycle,2)));
+  c[0]+= Math.sin(t*.15)*1.5;
+  const kc=eio(P(t,T.cycle,1.4)); c[2]=lerp(c[2],420,kc); c[3]=lerp(c[3],1060,kc); c[0]+=kc*(t-T.cycle)*3;
+  // intro: grow from small
+  const ki=eo(P(t,0,1.2)); c[2]*=lerp(.82,1,ki);
+  return c;
+}
+
+// ================= globe render =================
+const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+const HR=2; // field resolution divider
+let off=document.createElement('canvas'), octx=off.getContext('2d');
+let cld=document.createElement('canvas'), cctx=cld.getContext('2d');
+
+function fieldColor(v){ // v in [-1,1.2] -> [r,g,b,a]
+  if(v>0.08){ // warm: yellow -> orange -> red, with contour banding
+    let k=clamp((v-.08)/.9); k=clamp(k+.05*Math.sin(k*28));
+    let c; if(k<.45){const q=k/.45; c=[255,lerp(214,140,q),lerp(70,40,q)]} else {const q=(k-.45)/.55; c=[lerp(255,226,q),lerp(140,44,q),lerp(40,24,q)]}
+    return [c[0],c[1],c[2],clamp((v-.08)*3)*.92];
+  } else if(v<-0.08){ let k=clamp((-v-.08)/.8); k=clamp(k+.05*Math.sin(k*28));
+    return [lerp(120,40,k),lerp(220,110,k),255,clamp((-v-.08)*3)*.85];}
+  return [0,0,0,0];
+}
+
+function drawGlobe(t,s,cam){
+  const [lon0,lat0,R,cy]=cam, cx=540;
+  const proj=d3.geoOrthographic().rotate([-lon0,-lat0]).translate([cx,cy]).scale(R).clipAngle(90).precision(.3);
+  const path=d3.geoPath(proj,ctx);
+  // ---- per-pixel ocean + warm-water field (half resolution) ----
+  const x0=Math.max(0,Math.floor(cx-R)), x1=Math.min(1080,Math.ceil(cx+R)), y0=Math.max(0,Math.floor(cy-R)), y1=Math.min(1920,Math.ceil(cy+R));
+  const W=Math.ceil((x1-x0)/HR), H=Math.ceil((y1-y0)/HR);
+  off.width=W; off.height=H; cld.width=W; cld.height=H;
+  const img=octx.createImageData(W,H), d=img.data, cimg=cctx.createImageData(W,H), cd=cimg.data;
+  const sl0=Math.sin(lat0*D2R), cl0=Math.cos(lat0*D2R);
+  const tt=t*.05;
+  for(let j=0;j<H;j++){ const py=y0+j*HR+HR/2, yy=(cy-py)/R;
+    for(let i=0;i<W;i++){ const px=x0+i*HR+HR/2, xx=(px-cx)/R; const rho2=xx*xx+yy*yy; const o=(j*W+i)*4;
+      if(rho2>=1) continue;
+      const rho=Math.sqrt(rho2), cz=Math.sqrt(1-rho2); // cos c
+      let lat,lon;
+      if(rho<1e-9){lat=lat0;lon=lon0}else{
+        const sc=rho; lat=Math.asin(cz*sl0+yy*sc*cl0/rho)/D2R; lon=lon0+Math.atan2(xx*sc,rho*cz*cl0-yy*sc*sl0)/D2R;}
+      const la=lat*D2R, lo=lon*D2R, X=Math.cos(la)*Math.cos(lo), Y=Math.cos(la)*Math.sin(lo), Z=Math.sin(la);
+      // ocean base with limb darkening
+      const sh=.35+.65*cz;
+      let r=lerp(8,34,sh), g=lerp(30,96,sh), b=lerp(80,190,sh);
+      // subtle ocean texture
+      const n0=fbm(X*3+7,Y*3,Z*3); r+= (n0-.5)*10; g+=(n0-.5)*16; b+=(n0-.5)*22;
+      // warm-water field
+      let L=((lon%360)+360)%360;
+      const nz=fbm(X*4+tt,Y*4-tt,Z*4+3.1);
+      const dl=(L-s.Lc+(nz-.5)*26)/s.wid;
+      const latW=11+(nz-.5)*10 + (L>200? (L-200)*.04:0);
+      let v=s.amp*s.poolOn*Math.exp(-dl*dl*(dl>0?1:1.6))*Math.exp(-Math.pow((lat+ (nz-.5)*4)/latW,2));
+      // cold tongue (La Niña) in the east-central Pacific
+      const dlc=(L-245+(nz-.5)*20)/40; v-= s.cold*.95*Math.exp(-dlc*dlc)*Math.exp(-Math.pow(lat/(9+(nz-.5)*6),2));
+      const fc=fieldColor(v);
+      if(fc[3]>0){ const a=fc[3]*(.55+.45*cz); r=lerp(r,fc[0],a); g=lerp(g,fc[1],a); b=lerp(b,fc[2],a);}
+      d[o]=r; d[o+1]=g; d[o+2]=b; d[o+3]=255;
+      // clouds: background wisps + tropical convection cluster
+      const cw=fbm(X*3.2+tt*2+11,Y*3.2,Z*3.2-tt*1.5);
+      let ca=ss(.56,.78,cw)*.55*(.6+.4*Math.abs(Math.sin(la*2.2)));
+      const dc=(L-s.cL+(cw-.5)*30)/28, cl=Math.exp(-dc*dc)*Math.exp(-Math.pow((lat-3+(cw-.5)*8)/11,2));
+      const conv=s.cAmp*cl*ss(.32,.62,cw+cl*.25);
+      ca=Math.max(ca,clamp(conv));
+      if(ca>0.01){ const dk=s.cDark*clamp(conv*1.3); const cc=lerp(250,120,dk);
+        cd[o]=cc; cd[o+1]=cc+2; cd[o+2]=cc+8; cd[o+3]=255*ca*(.55+.45*cz); }
+    }}
+  octx.putImageData(img,0,0); cctx.putImageData(cimg,0,0);
+  // atmosphere glow
+  const gl=ctx.createRadialGradient(cx,cy,R*.92,cx,cy,R*1.16);
+  gl.addColorStop(0,'rgba(90,170,255,0.55)'); gl.addColorStop(.35,'rgba(60,130,255,0.22)'); gl.addColorStop(1,'rgba(40,90,255,0)');
+  ctx.fillStyle=gl; ctx.beginPath(); ctx.arc(cx,cy,R*1.16,0,7); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.clip();
+  ctx.imageSmoothingEnabled=true; ctx.drawImage(off,x0,y0,W*HR,H*HR);
+  // graticule
+  ctx.beginPath(); path(GRAT); ctx.strokeStyle='rgba(160,200,255,0.10)'; ctx.lineWidth=1.5; ctx.stroke();
+  // land
+  ctx.beginPath(); path(LAND);
+  const lg=ctx.createLinearGradient(0,cy-R,0,cy+R); lg.addColorStop(0,'#6E9C5A'); lg.addColorStop(.5,'#8DAE63'); lg.addColorStop(1,'#B9A56C');
+  ctx.fillStyle=lg; ctx.fill(); ctx.strokeStyle='rgba(20,40,30,.35)'; ctx.lineWidth=1.2; ctx.stroke();
+  // Indonesia condition tint
+  if(s.dry>0.01||s.wet>0.01){ ctx.beginPath(); path(INDO);
+    if(s.dry>0.01){ctx.fillStyle=`rgba(214,120,48,${.85*s.dry})`; ctx.fill();}
+    if(s.wet>0.01){ctx.fillStyle=`rgba(60,140,255,${.75*s.wet})`; ctx.fill();}
+    ctx.strokeStyle=`rgba(255,240,200,${.6*Math.max(s.dry,s.wet)})`; ctx.lineWidth=2; ctx.stroke(); }
+  // equator (dashed)
+  ctx.beginPath(); path({type:'LineString',coordinates:[[-180,0],[-90,0],[0,0],[90,0],[180,0]]});
+  ctx.setLineDash([14,12]); ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=2.5; ctx.stroke(); ctx.setLineDash([]);
+  // clouds
+  ctx.drawImage(cld,x0,y0,W*HR,H*HR);
+  // evaporation wisps + rain inside globe
+  drawEvapRain(t,s,proj,R);
+  // trade winds
+  drawWinds(t,s,proj,R);
+  // fires
+  if(s.fire>.01||s.hookFire>.01) drawFires(t,Math.max(s.fire,s.hookFire*.9),proj,R);
+  // night/limb shading
+  const sg=ctx.createRadialGradient(cx-R*.35,cy-R*.4,R*.1,cx,cy,R);
+  sg.addColorStop(0,'rgba(255,255,255,0.10)'); sg.addColorStop(.6,'rgba(0,0,0,0)'); sg.addColorStop(1,'rgba(0,5,25,0.55)');
+  ctx.fillStyle=sg; ctx.fillRect(cx-R,cy-R,2*R,2*R);
+  ctx.restore();
+  return proj;
+}
+function visible(proj,lon,lat){const r=proj.rotate();return d3.geoDistance([lon,lat],[-r[0],-r[1]])<Math.PI/2-.05}
+function drawWinds(t,s,proj,R){
+  const op=s.windOn*clamp(s.wind*1.1); if(op<=.02) return;
+  const lats=[-15,-8,8,15], sc=R/470;
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  lats.forEach((lat,li)=>{
+    const spacing=26, speed=10*Math.max(.35,s.wind);
+    for(let k=0;k<12;k++){
+      let L=290-((t*speed+k*spacing+li*11)%(spacing*12));   // flows westward
+      if(L<130) continue; const len=7+s.wind*5;
+      const pts=[]; for(let q=0;q<=6;q++){const ll=L+len*(1-q/6); pts.push([ll>180?ll-360:ll,lat])}
+      if(!visible(proj,pts[0][0],lat)||!visible(proj,pts[6][0],lat)) continue;
+      const fade=ss(130,150,L)*ss(290,270,L);
+      const P2=pts.map(p=>proj(p));
+      ctx.strokeStyle=`rgba(235,245,255,${op*.9*fade})`; ctx.lineWidth=(2.5+s.wind*2.2)*sc;
+      ctx.beginPath(); P2.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.stroke();
+      const a=P2[6], b=P2[5], ang=Math.atan2(a[1]-b[1],a[0]-b[0]), hs=(8+s.wind*5)*sc;
+      ctx.beginPath(); ctx.moveTo(a[0]-Math.cos(ang-.6)*hs,a[1]-Math.sin(ang-.6)*hs); ctx.lineTo(a[0],a[1]); ctx.lineTo(a[0]-Math.cos(ang+.6)*hs,a[1]-Math.sin(ang+.6)*hs); ctx.stroke();
+    }});
+}
+function drawEvapRain(t,s,proj,R){
+  const sc=R/470;
+  if(s.evap>.02){ for(let i=0;i<14;i++){ const L=s.Lc-25+rnd(i)*50, lat=-8+rnd(i+40)*16; const lon=L>180?L-360:L;
+      if(!visible(proj,lon,lat)) continue; const p=proj([lon,lat]); const ph=(t*.7+rnd(i+7))%1;
+      ctx.strokeStyle=`rgba(255,225,200,${Math.min(1,s.evap)*Math.sin(ph*Math.PI)*.8})`; ctx.lineWidth=3*sc;
+      ctx.beginPath(); const y=p[1]-ph*60*sc; ctx.moveTo(p[0],y); ctx.quadraticCurveTo(p[0]+8*sc,y-10*sc,p[0],y-20*sc); ctx.quadraticCurveTo(p[0]-8*sc,y-30*sc,p[0],y-40*sc); ctx.stroke(); }}
+  const rain=Math.max(s.rain,s.hookRain*1.6);
+  if(rain>.02){ const n=Math.round(30*Math.min(rain,1.6)); const cL=s.hookRain>.05?116:s.cL;
+    for(let i=0;i<n;i++){ const L=cL-26+rnd(i+100)*52, lat=-9+rnd(i+200)*20, lon=L>180?L-360:L;
+      if(!visible(proj,lon,lat)) continue; const p=proj([lon,lat]); const ph=(t*1.8+rnd(i+300))%1;
+      ctx.strokeStyle=`rgba(150,210,255,${Math.min(1,rain)*.9*Math.sin(ph*Math.PI)})`; ctx.lineWidth=3*sc;
+      ctx.beginPath(); ctx.moveTo(p[0]+4*sc,p[1]-30*sc+ph*30*sc); ctx.lineTo(p[0]-2*sc,p[1]-10*sc+ph*30*sc); ctx.stroke(); }}
+}
+function drawFires(t,a,proj,R){
+  const spots=[[101.5,-0.5],[103.5,-2.8],[111.5,-1.5],[113.8,-2.3],[116,-0.5],[110.5,0.8]]; const sc=Math.max(.8,R/470);
+  spots.forEach(([lo,la],i)=>{ if(!visible(proj,lo,la)) return; const p=proj([lo,la]);
+    for(let k=0;k<3;k++){const ph=(t*.5+k/3+i*.17)%1; ctx.fillStyle=`rgba(90,85,95,${a*(1-ph)*.55})`;
+      ctx.beginPath(); ctx.arc(p[0]+ph*30*sc,p[1]-ph*70*sc,(6+ph*18)*sc,0,7); ctx.fill();}
+    const f=1+.18*Math.sin(t*15+i*2); const g=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],16*sc*f*a);
+    g.addColorStop(0,'rgba(255,240,150,1)'); g.addColorStop(.4,'rgba(255,140,40,.95)'); g.addColorStop(1,'rgba(230,50,20,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p[0],p[1],16*sc*f*a+.1,0,7); ctx.fill(); });
+}
+
+// ================= background =================
+const STARS=[...Array(260)].map((_,i)=>[rnd(i)*1080,rnd(i+999)*1920,rnd(i+555)*1.8+.4,rnd(i+777)]);
+function background(t){
+  const g=ctx.createRadialGradient(540,1000,100,540,1000,1300); g.addColorStop(0,'#15275A'); g.addColorStop(.55,'#0A1636'); g.addColorStop(1,'#040916');
+  ctx.fillStyle=g; ctx.fillRect(0,0,1080,1920);
+  STARS.forEach(([x,y,r,p])=>{ctx.fillStyle=`rgba(220,230,255,${.25+.5*(.5+.5*Math.sin(t*1.5+p*20))})`; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();});
+}
+
+// ================= typography =================
+function font(sz,w=800){return `${w} ${sz}px I`}
+function textIn(t,t0,t1,dur=.45){const k=P(t,t0,dur), ko=P(t,t1,.3);return {op:eo(k)*(1-eo(ko)), dy:(1-back(k))*36-eo(ko)*20, k}}
+function shadowText(str,x,y,sz,col,w=800,align='center',op=1){
+  ctx.font=font(sz,w); ctx.textAlign=align; ctx.textBaseline='alphabetic'; ctx.globalAlpha=op;
+  ctx.fillStyle='rgba(0,0,10,.55)'; ctx.fillText(str,x+3,y+5); ctx.fillStyle=col; ctx.fillText(str,x,y); ctx.globalAlpha=1;}
+// headline row: segments [{s, style:'plain'|'box'|'boxWarm'|'boxCool'}], centered, with highlight boxes
+function headline(t,t0,t1,y,segs,sz=76){
+  const a=textIn(t,t0,t1); if(a.op<=0) return;
+  ctx.font=font(sz); const pad=sz*.28, gap=sz*.28;
+  const ws=segs.map(g=>ctx.measureText(g.s).width+(g.style!=='plain'?pad*2:0));
+  let total=ws.reduce((p,c)=>p+c,0)+gap*(segs.length-1); let x=540-total/2; const yy=y+a.dy;
+  segs.forEach((g,i)=>{ const st=g.style;
+    if(st!=='plain'){ const bc=st==='box'?COL.yellow:st==='boxWarm'?COL.warm:COL.cool;
+      const kb=eo(P(t,t0+.08*i,.4)); ctx.globalAlpha=a.op; ctx.fillStyle='rgba(0,0,10,.4)'; roundRect(x+4,yy-sz*.86+6,ws[i]*kb,sz*1.12,sz*.2); ctx.fill();
+      ctx.fillStyle=bc; roundRect(x,yy-sz*.86,ws[i]*kb,sz*1.12,sz*.2); ctx.fill(); ctx.globalAlpha=1;
+      ctx.font=font(sz); ctx.textAlign='left'; ctx.globalAlpha=a.op*eo(P(t,t0+.08*i+.15,.3)); ctx.fillStyle=st==='box'?'#14182A':'#FFFFFF'; ctx.fillText(g.s,x+pad,yy); ctx.globalAlpha=1;
+    } else shadowText(g.s,x,yy,sz,g.col||COL.ink,800,'left',a.op);
+    x+=ws[i]+gap; });
+}
+function kicker(t,t0,t1,y,str,col=COL.muted){const a=textIn(t,t0,t1); if(a.op<=0) return;
+  ctx.font=font(34,700); ctx.letterSpacing='6px'; shadowText(str,540,y+a.dy,34,col,700,'center',a.op); ctx.letterSpacing='0px';}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,Math.max(0,w),h,Math.min(r,w/2));}
+
+// pin callout: ring on a geo point, line to a label
+function pin(t,t0,t1,proj,lon,lat,lx,ly,label,col=COL.ink){
+  const k=eo(P(t,t0,.6)), ko=eo(P(t,t1,.4)), op=k*(1-ko); if(op<=0||!visible(proj,lon,lat)) return;
+  const [px,py]=proj([lon,lat]); ctx.globalAlpha=op;
+  const pulse=(t*1.2)%1; ctx.strokeStyle=col; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.arc(px,py,10+pulse*22,0,7); ctx.globalAlpha=op*(1-pulse); ctx.stroke(); ctx.globalAlpha=op;
+  ctx.beginPath(); ctx.arc(px,py,11,0,7); ctx.stroke(); ctx.fillStyle=col; ctx.beginPath(); ctx.arc(px,py,5,0,7); ctx.fill();
+  const ex=lerp(px,lx,k), ey=lerp(py,ly,k); ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(ex,ey); ctx.stroke();
+  ctx.font=font(36,800); const w=ctx.measureText(label).width+40; const bx=lx-w/2, by=ly-(ly<py?56:-4);
+  ctx.globalAlpha=op*k; ctx.fillStyle='rgba(8,16,40,.82)'; roundRect(bx,by,w,56,28); ctx.fill(); ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.stroke();
+  ctx.fillStyle=COL.ink; ctx.textAlign='center'; ctx.fillText(label,lx,by+40); ctx.globalAlpha=1;
+}
+
+// ================= cards (impacts) =================
+function icon(type,x,y,s,col){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s); ctx.fillStyle=col; ctx.strokeStyle=col; ctx.lineCap='round'; ctx.lineJoin='round';
+  if(type==='sun'){ctx.beginPath();ctx.arc(0,0,16,0,7);ctx.fill();ctx.lineWidth=5;for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.beginPath();ctx.moveTo(Math.cos(a)*24,Math.sin(a)*24);ctx.lineTo(Math.cos(a)*33,Math.sin(a)*33);ctx.stroke();}}
+  if(type==='therm'){ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(0,-30);ctx.lineTo(0,12);ctx.stroke();ctx.beginPath();ctx.arc(0,20,12,0,7);ctx.fill();ctx.lineWidth=3;[-20,-10,0].forEach(v=>{ctx.beginPath();ctx.moveTo(9,v);ctx.lineTo(16,v);ctx.stroke()});}
+  if(type==='crack'){ctx.fillStyle='#A86A35';roundRect(-32,-24,64,48,8);ctx.fill();ctx.strokeStyle='#3E2410';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-20,-24);ctx.lineTo(-6,-4);ctx.lineTo(-14,10);ctx.lineTo(-2,24);ctx.moveTo(-6,-4);ctx.lineTo(16,-8);ctx.lineTo(24,12);ctx.stroke();}
+  if(type==='fire'){ctx.beginPath();ctx.moveTo(0,30);ctx.bezierCurveTo(-30,20,-26,-10,-4,-34);ctx.bezierCurveTo(-2,-14,10,-12,12,-22);ctx.bezierCurveTo(30,2,26,24,0,30);ctx.fill();ctx.fillStyle=COL.yellow;ctx.beginPath();ctx.moveTo(0,26);ctx.bezierCurveTo(-12,18,-10,4,0,-6);ctx.bezierCurveTo(6,8,14,12,0,26);ctx.fill();}
+  if(type==='flood'){ctx.fillStyle=COL.ink;ctx.fillRect(-18,-12,36,28);ctx.beginPath();ctx.moveTo(-26,-10);ctx.lineTo(0,-32);ctx.lineTo(26,-10);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(-36,10);for(let i=0;i<4;i++){ctx.quadraticCurveTo(-27+i*18,0,-18+i*18,10);}ctx.lineTo(36,32);ctx.lineTo(-36,32);ctx.fill();}
+  if(type==='slide'){ctx.fillStyle='#5E8E4E';ctx.beginPath();ctx.moveTo(-36,30);ctx.lineTo(-36,-20);ctx.lineTo(36,30);ctx.fill();ctx.fillStyle='#A86A35';[[4,8,8],[18,20,6],[-8,-4,5],[26,28,5]].forEach(([a,b,r])=>{ctx.beginPath();ctx.arc(a,b,r,0,7);ctx.fill()});}
+  ctx.restore();
+}
+function card(t,t0,t1,x,y,type,label,col,w=230){
+  const k=P(t,t0,.45), ko=eo(P(t,t1,.35)); if(k<=0||ko>=1) return; const sc=back(k)*(1-ko*.2);
+  ctx.save(); ctx.translate(x,y); ctx.scale(sc,sc); ctx.globalAlpha=eo(k)*(1-ko);
+  ctx.fillStyle='rgba(8,16,40,.85)'; roundRect(-w/2,-80,w,160,26); ctx.fill(); ctx.strokeStyle=col; ctx.lineWidth=3; ctx.stroke();
+  icon(type,0,-22,1,col); ctx.font=font(30,800); ctx.textAlign='center'; ctx.fillStyle=COL.ink; ctx.fillText(label,0,56);
+  ctx.restore(); ctx.globalAlpha=1;
+}
+
+// ================= phase meter (top) =================
+function meter(t){
+  const op=eo(P(t,T.normal,.6))*(1-eo(P(t,T.cycle,.6)))*(1-eo(P(t,T.pend-.2,.3))*(1-eo(P(t,T.pendEnd-.3,.4)))); if(op<=0) return;
+  let pos=0; pos=lerp(pos,1,eio(P(t,T.nino,1))); pos=lerp(pos,2,eio(P(t,T.pend+.3,1.8)));
+  const xs=[300,540,780], lab=['NORMAL','EL NIÑO','LA NIÑA'], cs=[COL.ice,COL.warm,COL.cool];
+  ctx.globalAlpha=op; ctx.strokeStyle='rgba(150,170,210,.35)'; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(300,150); ctx.lineTo(780,150); ctx.stroke();
+  xs.forEach((x,i)=>{const near=1-clamp(Math.abs(pos-i)); ctx.fillStyle=near>.5?cs[i]:'#34456A'; ctx.beginPath(); ctx.arc(x,150,9+near*5,0,7); ctx.fill();
+    ctx.font=font(22,800); ctx.textAlign='center'; ctx.fillStyle=near>.5?cs[i]:COL.muted; ctx.fillText(lab[i],x,196);});
+  const px=lerp(300,780,pos/2); const pc=pos<1?mix(COL.ice,COL.warm,pos):mix(COL.warm,COL.cool,pos-1);
+  ctx.strokeStyle=pc; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(px,150,21,0,7); ctx.stroke(); ctx.globalAlpha=1;
+}
+
+// ================= pendulum (transition) =================
+function pendulum(t){
+  const kin=eo(P(t,T.pend-.1,.4)), kout=eo(P(t,T.pendEnd-.3,.4)), op=kin*(1-kout); if(op<=0) return;
+  const sw=eio(P(t,T.pend+.15,1.5)); const ang=lerp(32,-32,sw)*D2R;
+  const ax=540, ay=430, L=300, bx=ax+Math.sin(ang)*L, by=ay+Math.cos(ang)*L;
+  ctx.globalAlpha=op; ctx.strokeStyle='rgba(150,170,210,.4)'; ctx.setLineDash([3,14]); ctx.lineWidth=4; ctx.beginPath(); ctx.arc(ax,ay,L,(90-32)*D2R,(90+32)*D2R); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle=COL.ink; ctx.lineWidth=7; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+  ctx.fillStyle=COL.ink; ctx.beginPath(); ctx.arc(ax,ay,12,0,7); ctx.fill();
+  const g=ctx.createRadialGradient(bx-15,by-15,5,bx,by,58); const c=sw<.5?COL.warm:COL.cool; g.addColorStop(0,'#fff'); g.addColorStop(.25,mix(COL.warm,COL.cool,sw)); g.addColorStop(1,mix('#8A2A0A','#0A2A7A',sw));
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(bx,by,56,0,7); ctx.fill();
+  ctx.font=font(30,800); ctx.textAlign='center'; ctx.fillStyle=COL.warm; ctx.globalAlpha=op*(1-sw*.6); ctx.fillText('EL NIÑO',ax+Math.sin(32*D2R)*L+40,ay+Math.cos(32*D2R)*L+100);
+  ctx.fillStyle=COL.cool; ctx.globalAlpha=op*(.4+sw*.6); ctx.fillText('LA NIÑA',ax-Math.sin(32*D2R)*L-40,ay+Math.cos(32*D2R)*L+100); ctx.globalAlpha=1;
+}
+
+// ================= closing orbit =================
+function orbit(t,cam){
+  const k=eo(P(t,T.cycle+.2,1)); if(k<=0) return; const [,,R,cy]=cam; const r=R+70, rot=(t-T.cycle)*.5;
+  ctx.globalAlpha=k; ctx.lineCap='round';
+  const arc=(a0,a1,col)=>{ctx.strokeStyle=col; ctx.lineWidth=10; ctx.beginPath(); ctx.arc(540,cy,r,a0+rot,a0+rot+(a1-a0)*k); ctx.stroke();
+    const ae=a0+rot+(a1-a0)*k, hx=540+Math.cos(ae)*r, hy=cy+Math.sin(ae)*r, ta=ae+Math.PI/2;
+    ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(hx+Math.cos(ta)*24,hy+Math.sin(ta)*24); ctx.lineTo(hx+Math.cos(ta+2.4)*20,hy+Math.sin(ta+2.4)*20); ctx.lineTo(hx+Math.cos(ta-2.4)*20,hy+Math.sin(ta-2.4)*20); ctx.fill();};
+  arc(-Math.PI*.95,-Math.PI*.08,COL.warm); arc(Math.PI*.05,Math.PI*.92,COL.cool);
+  const node=(a,label,col)=>{const x=540+Math.cos(a+rot)*r, y=cy+Math.sin(a+rot)*r; ctx.font=font(32,800); const w=ctx.measureText(label).width+44;
+    ctx.fillStyle=col; roundRect(x-w/2,y-30,w,60,30); ctx.fill(); ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText(label,x,y+11);};
+  node(-Math.PI/2+.2,'EL NIÑO',COL.warm); node(Math.PI/2+.2,'LA NIÑA',COL.cool); ctx.globalAlpha=1;
+}
+
+// ================= HUD / captions per beat =================
+function hud(t,proj){
+  // intro title
+  { const a=textIn(t,.05,T.hook+.2,.5); if(a.op>0){ shadowText('EL NIÑO',540,300+a.dy,120,COL.warm,800,'center',a.op); shadowText('&',540,380+a.dy,50,COL.muted,700,'center',a.op); shadowText('LA NIÑA',540,480+a.dy,120,COL.cool,800,'center',a.op);} }
+  // hook
+  kicker(t,T.hook,T.answer-.2,250,'INDONESIA');
+  headline(t,T.drought-.3,T.flood-.35,370,[{s:'One year:',style:'plain'},{s:'DROUGHT',style:'boxWarm'}],94);
+  headline(t,T.flood-.3,T.answer-.2,370,[{s:'The next:',style:'plain'},{s:'FLOODS',style:'boxCool'}],94);
+  headline(t,T.answer,T.normal-.2,300,[{s:'The answer lies in',style:'plain'}],73);
+  headline(t,T.pacific-.4,T.normal-.2,440,[{s:'the Pacific Ocean',style:'box'}],94);
+  // normal year
+  kicker(t,T.normal,T.nino-.2,265,'A NORMAL YEAR');
+  headline(t,T.wind,T.pool-.2,370,[{s:'Trade winds',style:'box'},{s:'blow',style:'plain'}],85);
+  headline(t,T.wind+.6,T.pool-.2,465,[{s:'east → west',style:'plain',col:COL.ice}],66);
+  headline(t,T.pool,T.evap-.2,370,[{s:'Warm water',style:'boxWarm'}],94);
+  headline(t,T.pool+.4,T.evap-.2,470,[{s:'piles up near Indonesia',style:'plain'}],64);
+  headline(t,T.evap,T.nino-.2,370,[{s:'Evaporation',style:'plain'},{s:'→',style:'plain',col:COL.yellow},{s:'clouds',style:'plain'}],73);
+  headline(t,T.rain,T.nino-.2,470,[{s:'→ rain',style:'box'}],85);
+  // El Niño
+  headline(t,T.nino,T.pend-.2,350,[{s:'EL NIÑO',style:'boxWarm'}],142);
+  headline(t,T.ninoWeak,T.ninoCloud-.2,480,[{s:'Trade winds weaken',style:'plain'}],68);
+  headline(t,T.ninoDrift,T.ninoCloud-.2,560,[{s:'Warm water drifts',style:'plain'},{s:'east',style:'box'}],61);
+  headline(t,T.ninoCloud,T.result-.2,480,[{s:'Rain clouds follow it',style:'plain'}],68);
+  headline(t,T.result,T.pend-.2,490,[{s:'HEAT ↑',style:'plain',col:COL.warm},{s:'RAIN ↓',style:'plain',col:COL.ice}],76);
+  // pendulum
+  kicker(t,T.pend,T.pendEnd-.2,250,'THEN THE PENDULUM');
+  headline(t,T.pend+.3,T.pendEnd-.2,360,[{s:'swings back',style:'boxCool'}],99);
+  // La Niña build-up
+  kicker(t,T.pendEnd,T.cycle-.2,265,'THE REVERSE');
+  headline(t,T.ninaWind,T.ninaEvap-.2,370,[{s:'Trade winds',style:'plain'},{s:'stronger',style:'boxCool'}],80);
+  headline(t,T.ninaPile,T.ninaEvap-.2,470,[{s:'Warm water piles up',style:'plain'}],64);
+  headline(t,T.ninaEvap,T.nina-.2,370,[{s:'More evaporation',style:'plain'}],71);
+  headline(t,T.ninaCloud,T.nina-.2,455,[{s:'Thicker clouds',style:'plain',col:COL.muted}],61);
+  headline(t,T.ninaRain,T.nina-.2,540,[{s:'HEAVIER RAIN',style:'boxCool'}],78);
+  headline(t,T.nina,T.cycle-.2,350,[{s:'LA NIÑA',style:'boxCool'}],142);
+  headline(t,T.floods-.5,T.cycle-.2,480,[{s:'triggers floods & landslides',style:'plain'}],57);
+  // closing
+  headline(t,T.cycle,T.DUR+1,250,[{s:'Heat and floods:',style:'plain'}],73);
+  headline(t,T.cycle+.6,T.DUR+1,350,[{s:'one cycle',style:'box'}],94);
+  headline(t,T.cycleText,T.DUR+1,1640,[{s:'Know the signs.',style:'plain'}],71);
+  headline(t,T.cycleText+.7,T.DUR+1,1740,[{s:'Prepare early.',style:'boxWarm'}],80);
+  // pins on the globe
+  if(proj){
+    pin(t,T.normal+.2,T.wind+2.4,proj,118,-2,270,1610,'Indonesia',COL.ink);
+    pin(t,T.normal+.5,T.wind+2.4,proj,-76,-8,810,1610,'South America',COL.ink);
+    pin(t,T.pool+.6,T.evap-.2,proj,140,4,300,1610,'Warm pool',COL.yellow);
+    pin(t,T.ninoDrift+.6,T.ninoCloud+1.5,proj,-120,0,800,1610,'Warm water',COL.warm);
+    pin(t,T.ninaPile+.5,T.ninaEvap,proj,-120,0,800,1610,'Cooler water',COL.ice);
+  }
+  // impact cards
+  const cy=1745;
+  card(t,T.c1,T.pend,150,cy,'sun','Dry season',COL.yellow,240);
+  card(t,T.c2,T.pend,410,cy,'therm','Rising heat',COL.warm,240);
+  card(t,T.c3,T.pend,670,cy,'crack','Drought',COL.yellow,240);
+  card(t,T.c4,T.pend,930,cy,'fire','Forest fires',COL.warm,240);
+  card(t,T.ninaRain,T.nina-.2,540,cy,'flood','Heavy rain',COL.cool,280);
+  card(t,T.floods,T.cycle,355,cy,'flood','Floods',COL.cool,300);
+  card(t,T.slides,T.cycle,725,cy,'slide','Landslides',COL.ice,300);
+}
+
+function renderFrame(t){
+  const s=state(t), cam=camera(t);
+  background(t);
+  const proj=drawGlobe(t,s,cam);
+  orbit(t,cam);
+  // darken top for legible captions
+  const tg=ctx.createLinearGradient(0,0,0,700); tg.addColorStop(0,'rgba(4,9,22,.75)'); tg.addColorStop(1,'rgba(4,9,22,0)'); ctx.fillStyle=tg; ctx.fillRect(0,0,1080,700);
+  const bg=ctx.createLinearGradient(0,1500,0,1920); bg.addColorStop(0,'rgba(4,9,22,0)'); bg.addColorStop(1,'rgba(4,9,22,.7)'); ctx.fillStyle=bg; ctx.fillRect(0,1500,1080,420);
+  meter(t);
+  // pendulum dims the globe slightly
+  const pk=eo(P(t,T.pend-.1,.4))*(1-eo(P(t,T.pendEnd-.3,.4))); if(pk>0){ctx.fillStyle=`rgba(4,9,22,${.55*pk})`; ctx.fillRect(0,0,1080,1920);}
+  pendulum(t);
+  hud(t,proj);
+  // fade in from black at the very start
+  const fi=1-eo(P(t,0,.5)); if(fi>0){ctx.fillStyle=`rgba(4,9,22,${fi})`; ctx.fillRect(0,0,1080,1920);}
+}
+window.ready=(async()=>{await document.fonts.load('800 40px I');await document.fonts.load('700 40px I');await loadData();return true})();
+window.renderFrame=renderFrame; window.T=T;
+</script></body></html>
