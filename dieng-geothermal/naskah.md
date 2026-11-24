@@ -10,7 +10,7 @@ Open loop: tragedi Sinila 1979 (dibuka di detik ±7, dijawab di detik ±88)
 |---|---|---|---|---|---|---|
 | 1 | 0–3 | Hook | Di Dieng, embun bisa beku jadi es. | DI DIENG EMBUN BISA BEKU | — | Peta satelit 3D Dataran Tinggi Dieng saat subuh, termometer biru **-2°C**, kristal es di daun kentang |
 | 2 | 3–6 | Hook | Tapi tanahnya mendidih. Padahal tempat yang sama? | TAPI TANAHNYA MENDIDIH | PADAHAL TEMPAT YANG SAMA? (kuning) | Kamera turun ke Kawah Sikidang, lumpur bergolak, termometer merah **±90°C**; layar terbelah biru / merah |
-| 3 | 6–10 | Taruhan | Tahun 1979, satu pagi di Dieng, lebih dari 140 warga meninggal. | TAHUN 1979 | 140+ WARGA MENINGGAL (merah) | Ilustrasi flat desa di lembah, langit pagi kelabu, ikon 149 orang chibi memudar |
+| 3 | 6–10 | Taruhan | Tahun 1979, satu pagi di Dieng, lebih dari 140 warga meninggal. | TAHUN 1979 | 140+ WARGA MENINGGAL (merah) | Ilustrasi flat desa di lembah, langit pagi kelabu, ikon orang chibi memudar |
 | 4 | 10–13 | Taruhan | Tanpa luka bakar. Tanpa ledakan yang kena mereka. | TANPA LUKA BAKAR | TANPA LEDAKAN (merah) | Tanda X merah di atas ikon api dan ikon ledakan; tanda tanya besar |
 | 5 | 13–16 | Ajakan | Kita cek pakai sains, mulai dari bawah kaki. | KITA CEK PAKAI SAINS | MULAI DARI BAWAH KAKI (kuning) | Karakter penjelajah chibi berdiri, kamera tembus ke bawah tanah (potongan lapisan bumi) |
 | 6 | 16–20 | Patahkan | Bumi itu tebalnya 6.371 km ke pusat. | JARI-JARI BUMI | 6.371 KM (kuning) | Bumi utuh berputar, garis dari permukaan ke inti |
