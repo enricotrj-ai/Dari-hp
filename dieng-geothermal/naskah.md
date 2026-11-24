@@ -10,7 +10,7 @@ Open loop: tragedi Sinila 1979 (dibuka di detik ±7, dijawab di detik ±88)
 |---|---|---|---|---|---|---|
 | 1 | 0–3 | Hook | Di Dieng, embun bisa beku jadi es. | DI DIENG EMBUN BISA BEKU | — | Peta satelit 3D Dataran Tinggi Dieng saat subuh, termometer biru **-2°C**, kristal es di daun kentang |
 | 2 | 3–6 | Hook | Tapi tanahnya mendidih. Padahal tempat yang sama? | TAPI TANAHNYA MENDIDIH | PADAHAL TEMPAT YANG SAMA? (kuning) | Kamera turun ke Kawah Sikidang, lumpur bergolak, termometer merah **±90°C**; layar terbelah biru / merah |
-| 3 | 6–10 | Taruhan | Tahun 1979, satu pagi di Dieng, 149 warga meninggal. | TAHUN 1979 | 149 WARGA MENINGGAL (merah) | Ilustrasi flat desa di lembah, langit pagi kelabu, ikon 149 orang chibi memudar |
+| 3 | 6–10 | Taruhan | Tahun 1979, satu pagi di Dieng, lebih dari 140 warga meninggal. | TAHUN 1979 | 140+ WARGA MENINGGAL (merah) | Ilustrasi flat desa di lembah, langit pagi kelabu, ikon 149 orang chibi memudar |
 | 4 | 10–13 | Taruhan | Tanpa luka bakar. Tanpa ledakan yang kena mereka. | TANPA LUKA BAKAR | TANPA LEDAKAN (merah) | Tanda X merah di atas ikon api dan ikon ledakan; tanda tanya besar |
 | 5 | 13–16 | Ajakan | Kita cek pakai sains, mulai dari bawah kaki. | KITA CEK PAKAI SAINS | MULAI DARI BAWAH KAKI (kuning) | Karakter penjelajah chibi berdiri, kamera tembus ke bawah tanah (potongan lapisan bumi) |
 | 6 | 16–20 | Patahkan | Bumi itu tebalnya 6.371 km ke pusat. | JARI-JARI BUMI | 6.371 KM (kuning) | Bumi utuh berputar, garis dari permukaan ke inti |
@@ -24,7 +24,7 @@ Open loop: tragedi Sinila 1979 (dibuka di detik ±7, dijawab di detik ±88)
 | 14 | 52–57 | Mekanisme | Kompor, isi, tutup. Dieng itu panci presto bumi. | DIENG ITU | PANCI PRESTO BUMI (kuning) | Seluruh diagram "morph" jadi panci presto raksasa di bawah peta Dieng |
 | 15 | 57–62 | Mekanisme | Di dalam tutup itu, airnya bisa lebih dari 250 derajat, tapi tetap cair karena ditekan. | DI BAWAH TUTUP | AIR >250°C TAPI TETAP CAIR (merah) | Pengukur tekanan presto, jarum ke merah |
 | 16 | 62–67 | Mekanisme | Kawah itu katupnya. Uapnya keluar di Sikidang. Sumur PLTP nyedot uapnya buat listrik. | KAWAH = KATUP PRESTO | UAPNYA JADI LISTRIK (kuning) | Katup presto berdesis = Kawah Sikidang; pipa PLTP, turbin berputar, bohlam menyala |
-| 17 | 67–72 | Twist | Tapi itu belum cukup buat jelasin 149 warga tadi. | TAPI ITU BELUM CUKUP | BUAT JELASIN 1979 (kuning) | Kembali ke desa lembah ilustrasi flat |
+| 17 | 67–72 | Twist | Tapi itu belum cukup buat jelasin korban 1979 tadi. | TAPI ITU BELUM CUKUP | BUAT JELASIN 1979 (kuning) | Kembali ke desa lembah ilustrasi flat |
 | 18 | 72–77 | Twist | Presto nggak cuma ngeluarin uap. Dia juga ngeluarin gas. | PRESTO NGGAK CUMA UAP | JUGA GAS (merah) | Dari katup keluar awan putih (uap) dan awan transparan bergaris (gas) |
 | 19 | 77–82 | Twist | Yang bau telur busuk itu belerang. Bikin kita kabur. | YANG BAU = BELERANG | BIKIN KABUR (kuning) | Karakter tutup hidung, garis bau kuning, lari menjauh |
 | 20 | 82–88 | Twist | Yang paling bahaya justru yang nggak bau. Karbon dioksida. Lebih berat dari udara, jadi dia ngalir turun, ngumpul di lembah. | YANG PALING BAHAYA JUSTRU | YANG NGGAK BAU (merah) | Gas tak berwarna (garis putus-putus) mengalir menuruni lereng seperti air, menggenangi cekungan |
@@ -36,12 +36,12 @@ Open loop: tragedi Sinila 1979 (dibuka di detik ±7, dijawab di detik ±88)
 ## Narasi utuh (untuk VO)
 
 > Di Dieng, embun bisa beku jadi es. Tapi tanahnya mendidih. Padahal tempat yang sama?
-> Tahun 1979, satu pagi di Dieng, 149 warga meninggal. Tanpa luka bakar. Tanpa ledakan yang kena mereka.
+> Tahun 1979, satu pagi di Dieng, lebih dari 140 warga meninggal. Tanpa luka bakar. Tanpa ledakan yang kena mereka.
 > Kita cek pakai sains, mulai dari bawah kaki.
 > Bumi itu tebalnya 6.371 km ke pusat. Sumur panas bumi di Dieng cuma sekitar 2 km. Kalau bumi seukuran apel, itu belum tembus kulitnya. Baru nyolek kulit, kok udah panas banget?
 > Normalnya, makin dalam tanah, makin panas sekitar 25 sampai 30 derajat tiap kilometer. Tapi Dieng duduk di atas sisa gunung api. Magma-nya dangkal. Jadi magma itu kompornya. Air hujan meresap ke batuan berpori, itu isi pancinya. Di atasnya ada lapisan batu kedap, itu tutupnya. Kompor, isi, tutup. Dieng itu panci presto bumi.
 > Di dalam tutup itu, airnya bisa lebih dari 250 derajat, tapi tetap cair karena ditekan. Kawah itu katupnya. Uapnya keluar di Sikidang. Sumur PLTP nyedot uapnya buat listrik.
-> Tapi itu belum cukup buat jelasin 149 warga tadi. Presto nggak cuma ngeluarin uap, dia juga ngeluarin gas. Yang bau telur busuk itu belerang, bikin kita kabur. Yang paling bahaya justru yang nggak bau. Karbon dioksida. Lebih berat dari udara, jadi dia ngalir turun, ngumpul di lembah.
+> Tapi itu belum cukup buat jelasin korban 1979 tadi. Presto nggak cuma ngeluarin uap, dia juga ngeluarin gas. Yang bau telur busuk itu belerang, bikin kita kabur. Yang paling bahaya justru yang nggak bau. Karbon dioksida. Lebih berat dari udara, jadi dia ngalir turun, ngumpul di lembah.
 > 1979 itu bukan kutukan kawah. Itu gas yang tenggelam.
 > Jadi bukan Dieng yang aneh. Di atas kulkas, di bawah panci presto.
 > Ke kawah: ikutin jalur resmi, jangan turun ke cekungan, jangan kelamaan.
@@ -55,7 +55,8 @@ Open loop: tragedi Sinila 1979 (dibuka di detik ±7, dijawab di detik ±88)
 |---|---|---|
 | Embun upas / embun beku di Dieng, suhu bisa di bawah 0°C | Kuat | Terjadi saat puncak kemarau (±Juli–Agustus); angka -2°C sebagai ilustrasi, sesuaikan dengan data BMKG tahun yang dipakai |
 | Air Kawah Sikidang ±90°C | Kuat | Di ketinggian ±2.000 m air mendidih di ±93°C (tekanan udara lebih rendah), jadi "mendidih" tetap akurat |
-| Tragedi Kawah Sinila, 20 Februari 1979, 149 korban, gas CO₂ | Kuat, cek angka | Angka 149 paling sering dikutip; sumber menyebut gas utama CO₂ (beberapa menyebut juga H₂S). Warga menghindari letusan lalu masuk area gas |
+| Tragedi Kawah Sinila, 20 Februari 1979, gas CO₂ | Dicek | Sumber menyebut 142, 149, atau 175–180 korban, jadi narasi memakai "lebih dari 140". Studi ilmiah menyebut gas hampir murni CO₂ (beberapa sumber menyebut juga H₂S) |
+| "Dieng kapasitas panas bumi terbesar di dunia" | **Salah, tidak dipakai** | Dieng ±60 MW (Unit 1) + Unit 2 55 MW sedang dibangun. Lapangan terbesar dunia: The Geysers, California (±1.500 MW). Yang benar: Indonesia nomor 2 dunia (±2.740 MW, akhir 2025) |
 | "Tanpa ledakan yang kena mereka" | Penyederhanaan | Ada letusan freatik, tetapi korban meninggal karena gas, bukan karena kena letusan langsung |
 | Jari-jari bumi 6.371 km | Pasti | — |
 | Sumur PLTP Dieng ±2 km | Perkiraan | Kedalaman sumur bervariasi ±1,5–3 km; "sekitar 2 km" aman |
