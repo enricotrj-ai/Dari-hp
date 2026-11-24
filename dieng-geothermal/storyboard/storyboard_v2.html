@@ -1,0 +1,118 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Storyboard v2: They Ran From the Volcano</title>
+<style>
+body{margin:0;background:#14161c;color:#e9ecf2;font-family:"DejaVu Sans",Arial,sans-serif;padding:28px}
+h1{margin:0 0 4px;font-size:26px}.sub{color:#9aa3b2;font-size:13px;margin-bottom:14px}
+.legend{display:flex;gap:14px;font-size:12px;color:#c9cfda;margin-bottom:8px;flex-wrap:wrap}
+.legend b{display:inline-block;padding:1px 6px;border-radius:4px;color:#111;margin-right:4px;font-size:11px}
+.grid{display:grid;grid-template-columns:repeat(5,220px);gap:16px;margin-top:16px}
+.card{background:#1f222b;border-radius:10px;overflow:hidden}.card svg{display:block}
+.meta{padding:7px 9px 9px;font-size:10.5px;line-height:1.35}
+.meta .h{display:flex;justify-content:space-between;font-weight:bold;font-size:11px;margin-bottom:3px}
+.act{color:#FFD84D}.vo{color:#c9cfda;font-style:italic}
+.tags{margin-top:5px;display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:9.5px;font-weight:bold;padding:1px 5px;border-radius:3px;color:#111}
+</style></head><body>
+<h1>Storyboard v2: "They Ran From the Volcano. That Was the Mistake."</h1>
+<div class="sub">exp · English global · 9:16 · ±110 s · 25 beats · rough sketch of style, composition and on-screen text (not final art)</div>
+<div class="legend">STYLE:
+<span><b style="background:#ff9f6b">CIN</b>cinematic real</span>
+<span><b style="background:#9fd0f0">MAP</b>minimal 3D relief map</span>
+<span><b style="background:#ff6a4a">CORE</b>Earth layers cutaway</span>
+<span><b style="background:#b7d98f">BLOCK</b>geological block diagram</span>
+<span><b style="background:#c9a7ff">GFX</b>Remotion graphics</span></div>
+<div class="legend">ANIMATION:
+<span><b style="background:#e9ecf2">T2V</b>text-to-video</span>
+<span><b style="background:#e9ecf2">I2V</b>image-to-video</span>
+<span><b style="background:#e9ecf2">2.5D</b>still image + camera move</span>
+<span><b style="background:#e9ecf2">OVL</b>animated overlay</span>
+<span style="color:#9aa3b2">· all text & numbers added in Remotion</span></div>
+<div class="grid" id="g"></div>
+<script>
+const C={y:'#FFD84D',r:'#FF5A5A',b:'#7FDBFF'};
+const SC={CIN:'#ff9f6b',MAP:'#9fd0f0',CORE:'#ff6a4a',BLOCK:'#b7d98f',GFX:'#c9a7ff'};
+// ---------- backgrounds ----------
+const grid=`<g stroke="#000" stroke-opacity=".07">${[40,80,120,160,200].map(x=>`<line x1="${x}" y1="0" x2="${x}" y2="391"/>`).join('')}${[50,100,150,200,250,300,350].map(y=>`<line x1="0" y1="${y}" x2="220" y2="${y}"/>`).join('')}</g>`;
+const B={
+ mud:`<defs><radialGradient id="mg"><stop offset="0" stop-color="#8a8478"/><stop offset="1" stop-color="#3e3a34"/></radialGradient></defs><rect width="220" height="391" fill="url(#mg)"/>`+[[60,250,22],[140,290,30],[100,330,16],[170,220,14],[40,320,12]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#b5ad9f" stroke-width="3"/>`).join('')+`<path d="M90 210 q-10 -40 10 -70 q15 -25 0 -55" stroke="#eee" stroke-width="16" fill="none" opacity=".3" stroke-linecap="round"/>`,
+ frost:`<defs><linearGradient id="fr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b4a7a"/><stop offset="1" stop-color="#9fc3e6"/></linearGradient></defs><rect width="220" height="391" fill="url(#fr)"/>`+[[50,300],[120,320],[180,290],[80,360],[160,365]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="30" ry="14" fill="#4f8a5b" transform="rotate(-20 ${x} ${y})"/><path d="M${x-12} ${y-4} l6 -6 m0 6 l-6 -6 M${x+8} ${y+2} l5 -5 m0 5 l-5 -5" stroke="#fff" stroke-width="1.6"/>`).join(''),
+ fog:`<rect width="220" height="391" fill="#7d838c"/><rect y="300" width="220" height="91" fill="#5d625f"/>`+[[30,260],[95,250],[160,265]].map(([x,y])=>`<rect x="${x}" y="${y}" width="40" height="45" fill="#3e4246"/><path d="M${x-5} ${y} l25 -22 l25 22z" fill="#2f3235"/>`).join('')+`<rect width="220" height="391" fill="#cfd3d8" opacity=".35"/>`,
+ paper:`<rect width="220" height="391" fill="#ece6da"/>`+grid,
+ ocean:`<rect width="220" height="391" fill="#c6d9e6"/>`+grid,
+ space:`<rect width="220" height="391" fill="#070a18"/>`+Array.from({length:40},(_,i)=>`<circle cx="${(i*53)%220}" cy="${(i*97)%391}" r="${i%3?0.7:1.3}" fill="#fff" opacity=".7"/>`).join(''),
+ studio:`<defs><radialGradient id="st" cx=".5" cy=".45"><stop offset="0" stop-color="#d9dde2"/><stop offset="1" stop-color="#a9afb7"/></radialGradient></defs><rect width="220" height="391" fill="url(#st)"/>`
+};
+// ---------- primitives ----------
+const land=(d)=>`<path d="${d}" fill="#000" opacity=".12" transform="translate(3 4)"/><path d="${d}" fill="#f6f2ea" stroke="#d8d0c2" stroke-width="1"/>`;
+const volc=(x,y,s=1,smoke=true)=>`<path d="M${x-22*s} ${y} L${x-5*s} ${y-26*s} h${10*s} L${x+22*s} ${y}z" fill="#8d8780"/><path d="M${x-5*s} ${y-26*s} h${10*s}" stroke="#ff6a2a" stroke-width="${3*s}"/>${smoke?`<g fill="#6e6a66" opacity=".85"><circle cx="${x}" cy="${y-38*s}" r="${9*s}"/><circle cx="${x-8*s}" cy="${y-50*s}" r="${11*s}"/><circle cx="${x+7*s}" cy="${y-56*s}" r="${12*s}"/><circle cx="${x}" cy="${y-70*s}" r="${14*s}"/></g>`:''}`;
+const fig=(x,y,s=1,o='')=>`<g opacity="${o||1}"><circle cx="${x}" cy="${y}" r="${4*s}" fill="#fff" stroke="#999" stroke-width=".6"/><path d="M${x} ${y+4*s} v${9*s} M${x} ${y+7*s} l${-5*s} ${4*s} M${x} ${y+7*s} l${5*s} ${-2*s} M${x} ${y+13*s} l${-4*s} ${6*s} M${x} ${y+13*s} l${5*s} ${5*s}" stroke="#fff" stroke-width="${2.4*s}" stroke-linecap="round"/></g>`;
+const pin=(x,y,t)=>{const w=t.length*6.4+10;if(x+58+w>214){const ex=Math.max(4,x-18-w);return `<circle cx="${x}" cy="${y}" r="4" fill="#111"/><path d="M${x} ${y} l-14 -24 H${ex+w}" stroke="#111" fill="none" stroke-width="1"/><rect x="${ex}" y="${y-33}" width="${w}" height="17" fill="#111"/><text x="${ex+5}" y="${y-21}" fill="#fff" font-size="10" font-weight="bold">${t}</text>`}return `<circle cx="${x}" cy="${y}" r="4" fill="#111"/><path d="M${x} ${y} l18 -24 h40" stroke="#111" fill="none" stroke-width="1"/><rect x="${x+58}" y="${y-33}" width="${t.length*6.4+10}" height="17" fill="#111"/><text x="${x+63}" y="${y-21}" fill="#fff" font-size="10" font-weight="bold">${t}</text>`};
+const therm=(x,y,col,t)=>`<rect x="${x-4}" y="${y-50}" width="8" height="50" rx="4" fill="#fff"/><rect x="${x-2}" y="${y-30}" width="4" height="30" fill="${col}"/><circle cx="${x}" cy="${y+4}" r="8" fill="${col}"/><text x="${x-6}" y="${y+28}" fill="${col}" font-size="15" font-weight="bold" text-anchor="middle">${t}</text>`;
+const X=(x,y,s=16)=>`<path d="M${x-s} ${y-s} L${x+s} ${y+s} M${x+s} ${y-s} L${x-s} ${y+s}" stroke="${C.r}" stroke-width="5" stroke-linecap="round"/>`;
+const gas=(d)=>`<path d="${d}" fill="${C.b}" fill-opacity=".18" stroke="${C.b}" stroke-width="2" stroke-dasharray="5 4"/>`;
+// isometric terrain block: x,y = top-front corner
+function block(x,y,w,h,o={}){const dx=w*.5,dy=w*.22;const top=`M${x} ${y} l${dx} ${-dy} l${dx} ${dy} l${-dx} ${dy}z`;
+ const left=`M${x} ${y} l${dx} ${dy} v${h} l${-dx} ${-dy}z`, right=`M${x+dx} ${y+dy} l${dx} ${-dy} v${h} l${-dx} ${dy}z`;
+ let s=`<ellipse cx="${x+dx}" cy="${y+dy+h+14}" rx="${dx*1.05}" ry="10" fill="#000" opacity=".18"/>`;
+ s+=`<path d="${left}" fill="#c9774a"/><path d="${right}" fill="#b0643c"/>`;
+ // layers
+ const L=o.layers||[[.0,'#8a6a4a',.25],[.25,'#a0603a',.35],[.6,'#c45a2a',.4]];
+ L.forEach(([t,c,hh])=>{s+=`<path d="M${x} ${y+h*t} l${dx} ${dy} v${h*hh} l${-dx} ${-dy}z" fill="${c}"/><path d="M${x+dx} ${y+dy+h*t} l${dx} ${-dy} v${h*hh} l${-dx} ${dy}z" fill="${c}" opacity=".85"/>`});
+ if(o.res){s+=`<path d="M${x+8} ${y+h*o.res+6} q${dx*.4} ${10} ${dx-8} ${dy+2} v14 q${-dx*.5} ${-2} ${-dx+8} ${-dy-4}z" fill="#3d86c6" opacity=".9"/><path d="M${x+dx+8} ${y+dy+h*o.res} q${dx*.4} ${-12} ${dx-14} ${-dy+4} v14 q${-dx*.4} 8 ${-dx+14} ${dy+6}z" fill="#3d86c6" opacity=".8"/>`}
+ if(o.lid){s+=`<path d="M${x} ${y+h*o.lid} l${dx} ${dy} v8 l${-dx} ${-dy}z" fill="#8a8f96"/><path d="M${x+dx} ${y+dy+h*o.lid} l${dx} ${-dy} v8 l${-dx} ${dy}z" fill="#7a7f86"/>`}
+ if(o.magma){s+=`<ellipse cx="${x+dx}" cy="${y+h+dy-10}" rx="${dx*.6}" ry="12" fill="#ff6a2a"/><ellipse cx="${x+dx}" cy="${y+h+dy-10}" rx="${dx*.35}" ry="6" fill="#ffd24a"/>`}
+ s+=`<path d="${top}" fill="${o.top||'#7fa65a'}"/>`;
+ if(o.valley){s+=`<path d="M${x+dx*.3} ${y-dy*.1} q${dx*.7} ${dy*1.1} ${dx*1.4} ${-dy*.2}" stroke="#5f8a45" stroke-width="10" fill="none"/>`}
+ if(o.well){o.well.forEach(([fx,col])=>{const wx=x+dx*fx;s+=`<path d="M${wx} ${y+dy*(fx<1?fx:2-fx)*.0+2} v${h*.85}" stroke="#eee" stroke-width="2.5"/><circle cx="${wx}" cy="${y+h*.85}" r="7" fill="${col}" opacity=".85"/>`})}
+ if(o.plant){s+=`<rect x="${x+dx-14}" y="${y-18}" width="28" height="14" fill="#e6e6e6" stroke="#999"/><rect x="${x+dx+18}" y="${y-26}" width="9" height="16" fill="#cfcfcf" stroke="#999"/><path d="M${x+dx+22} ${y-28} q-4 -10 2 -18" stroke="#fff" stroke-width="5" fill="none" opacity=".8"/>`}
+ if(o.vent){s+=`<ellipse cx="${x+dx*.7}" cy="${y-2}" rx="9" ry="4" fill="#9a9184"/><path d="M${x+dx*.7} ${y-6} q-6 -16 4 -30 q8 -12 -2 -26" stroke="#fff" stroke-width="9" fill="none" opacity=".75" stroke-linecap="round"/>`}
+ return s}
+// earth layers (CORE)
+function core(focus){let s='';const cx=110;
+ const arcs=focus==='top'?[[1500,'#3b6fb0'],[1490,'#7a6a58'],[1470,'#c2551f'],[1400,'#9a2c12']]:focus==='core'?[[520,'#c2551f'],[420,'#8a2410'],[300,'#ff8a1a'],[150,'#ffe0a0']]:[[620,'#3b6fb0'],[600,'#7a6a58'],[560,'#c2551f'],[470,'#8a2410'],[380,'#ff8a1a'],[250,'#ffe0a0']];
+ const cy=focus==='top'?1680:focus==='core'?520:820;
+ arcs.forEach(([r,c])=>{s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}"/>`});
+ if(focus!=='top')s+=`<circle cx="${cx}" cy="${cy}" r="${arcs[arcs.length-1][0]}" fill="#fff6d8" opacity=".5"/>`;
+ s+=`<line x1="110" y1="${focus==='top'?150:180}" x2="110" y2="391" stroke="#fff" stroke-opacity=".6" stroke-width="1.2"/>`;
+ return s}
+// ---------- text overlay ----------
+const wrap=(t,m)=>{const w=t.split(' ');const L=[];let c='';for(const x of w){if((c+' '+x).trim().length>m){L.push(c.trim());c=x}else c+=' '+x}L.push(c.trim());return L};
+const text=(l1,l2,col,light)=>{let y=72,o='';const a=wrap(l1,20),b=l2?wrap(l2,18):[];const hh=a.length*17+(b.length?b.length*19+3:0)+12;
+ if(light)o+=`<rect x="8" y="${y-17}" width="204" height="${hh}" rx="8" fill="#10131c" opacity=".55"/>`;
+ a.forEach(s=>{o+=`<text x="110" y="${y}" text-anchor="middle" fill="#fff" font-size="13.5" font-weight="bold" stroke="#000" stroke-opacity=".45" stroke-width="3" paint-order="stroke">${s}</text>`;y+=17});
+ if(b.length){y+=3;b.forEach(s=>{o+=`<text x="110" y="${y}" text-anchor="middle" fill="${C[col]}" font-size="15.5" font-weight="bold" stroke="#000" stroke-opacity=".5" stroke-width="3" paint-order="stroke">${s}</text>`;y+=19})}return o};
+// ---------- beats ----------
+const java=land('M-10 250 q40 -18 80 -8 q40 6 70 -4 q40 -10 90 6 v26 q-50 10 -90 4 q-40 -6 -80 4 q-40 8 -70 -2z');
+const valley=land('M-10 200 L80 290 Q110 310 140 290 L230 200 V391 H-10z');
+const beats=[
+ ['0–2','HOOK','CIN','T2V',B.mud+therm(175,200,C.r,'90°C'),'THE GROUND BOILS','',null,0,'The ground here boils.'],
+ ['2–4','HOOK','CIN','T2V',B.frost+therm(175,200,C.b,'−2°C'),'THE DEW FREEZES','',null,0,'The dew here freezes.'],
+ ['4–6','HOOK','CIN','T2V',B.fog,'THE AIR KILLED 140+','IN ONE MORNING','r',0,'…the air once killed over 140 people in one morning.'],
+ ['6–10','STAKES','MAP','I2V + OVL',B.paper+valley+volc(185,210,.9)+fig(120,300)+fig(95,282)+fig(70,262)+`<rect width="220" height="391" fill="#000" opacity=".12"/><text x="110" y="375" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">❚❚ FREEZE-FRAME (desaturate)</text>`,'THEY DIDN\'T DIE IN THE ERUPTION','THEY DIED RUNNING FROM IT','r',1,'…they died running away from it.'],
+ ['10–14','INVITE','MAP','I2V + OVL',B.ocean+java+volc(120,250,.5)+pin(120,262,'DIENG · 2,000 m')+`<text x="40" y="330" font-size="10" fill="#555" letter-spacing="2">JAVA, INDONESIA</text>`,'DIENG, INDONESIA','NOW IT POWERS HOMES','y',1,'This is Dieng, Indonesia… the same ground lights up homes.'],
+ ['14–17','INVITE','CORE','2.5D',B.space+core('top')+`<text x="110" y="370" text-anchor="middle" fill="#fff" font-size="16">⬇ dive</text>`,'HOW?','LET\'S DIG. LITERALLY.','y',0,'How? Let\'s dig. Literally.'],
+ ['17–22','SCALE','CORE','2.5D + OVL',B.space+core('core')+`<rect x="62" y="300" width="96" height="40" rx="6" fill="#111" opacity=".8"/><text x="110" y="318" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">INNER CORE</text><text x="110" y="333" text-anchor="middle" fill="${C.r}" font-size="11" font-weight="bold">≈5,400°C ☀</text>`,'EARTH\'S CORE','≈5,400°C, LIKE THE SUN','r',0,'The center of our planet is about as hot as the surface of the Sun.'],
+ ['22–27','SCALE','CORE','2.5D + OVL',B.space+core('mid')+`<circle cx="110" cy="203" r="26" fill="none" stroke="#fff" stroke-width="3"/><line x1="128" y1="222" x2="150" y2="246" stroke="#fff" stroke-width="4"/><path d="M92 202 h36" stroke="${C.y}" stroke-width="2"/><text x="160" y="262" fill="${C.y}" font-size="13" font-weight="bold">2 KM</text><text x="110" y="370" text-anchor="middle" fill="#fff" font-size="16">⬆ whoosh</text>`,'YOU ONLY NEED','2 KM. THIS THIN.','y',0,'But here… just 2 kilometers. This thin.'],
+ ['27–32','SCALE','BLOCK','2.5D + OVL',B.studio+block(8,250,96,80,{well:[[1,'#7fb8e0']]})+block(116,250,96,80,{well:[[1,C.r]],magma:1})+`<text x="56" y="370" text-anchor="middle" fill="#2a6f9e" font-size="13" font-weight="bold">≈70°C 🛁</text><text x="164" y="370" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="bold">250°C+</text><text x="56" y="222" text-anchor="middle" fill="#333" font-size="9">NORMAL</text><text x="164" y="222" text-anchor="middle" fill="#333" font-size="9">DIENG</text>`,'NORMAL: ≈70°C · HERE: 250°C+','WHY SO HOT, SO CLOSE?','y',1,'Normal ground ≈70°… here over 250. Why so hot, so close?'],
+ ['32–37','MECHANISM','MAP → BLOCK','2.5D + OVL',B.ocean+`<circle cx="110" cy="240" r="85" fill="#f6f2ea" stroke="#d8d0c2"/><circle cx="110" cy="240" r="58" fill="#c6d9e6"/><ellipse cx="110" cy="240" rx="72" ry="78" fill="none" stroke="#ff6a2a" stroke-width="4" stroke-dasharray="7 4"/>`+volc(60,290,.4,false)+pin(60,290,'DIENG'),'RING OF FIRE','MAGMA = THE STOVE','r',1,'Ring of Fire… old volcano… magma is the stove.'],
+ ['37–41','MECHANISM','BLOCK','OVL',B.studio+block(20,190,180,140,{res:.45,magma:1})+[40,75,110,145,180].map(x=>`<path d="M${x} 120 l-4 18" stroke="#3d86c6" stroke-width="2.5"/>`).join(''),'RAIN IN POROUS ROCK','= THE WATER','y',1,'Rain soaks into porous rock… the water in the pot.'],
+ ['41–45','MECHANISM','BLOCK','OVL',B.studio+block(20,190,180,140,{res:.45,lid:.3,magma:1})+[60,110,160].map(x=>`<path d="M${x} 262 v-12 m-5 5 l5 -5 l5 5" stroke="#fff" stroke-width="2.5" fill="none"/>`).join(''),'SEALED ROCK ON TOP','= THE LID','y',1,'A layer of sealed rock caps it. That\'s the lid.'],
+ ['45–49','MECHANISM','BLOCK + GFX','OVL',B.studio+block(20,190,180,140,{res:.45,lid:.3,magma:1})+`<g stroke="#fff" stroke-width="2.5" fill="none" opacity=".95"><rect x="50" y="240" width="120" height="80" rx="14"/><rect x="40" y="226" width="140" height="14" rx="6"/><rect x="104" y="208" width="12" height="18"/></g><path d="M110 204 q-6 -12 2 -24" stroke="#fff" stroke-width="4" fill="none"/>`,'YOU\'RE STANDING ON','EARTH\'S PRESSURE COOKER','y',1,'Stove, water, lid. Earth\'s pressure cooker.'],
+ ['49–54','MECHANISM','GFX','OVL',B.studio+`<g opacity=".35">${block(20,190,180,140,{res:.45,lid:.3,magma:1})}</g><circle cx="110" cy="260" r="46" fill="#fff" stroke="#333" stroke-width="3"/><path d="M78 268 A34 34 0 0 1 142 268" stroke="${C.r}" stroke-width="7" fill="none" stroke-dasharray="0 70 40"/><line x1="110" y1="260" x2="138" y2="244" stroke="#222" stroke-width="4" stroke-linecap="round"/><circle cx="110" cy="260" r="5" fill="#222"/><text x="110" y="295" text-anchor="middle" font-size="9" fill="#333" font-weight="bold">PRESSURE</text>`,'WHY ISN\'T IT STEAM?','SQUEEZED TOO HARD TO BOIL','y',1,'250-degree water stays liquid… squeezed too hard to boil.'],
+ ['54–59','MECHANISM','BLOCK','I2V + OVL',B.studio+block(20,200,180,130,{res:.5,lid:.3,plant:1,vent:1,well:[[.6,C.r]]})+`<path d="M120 172 h50" stroke="${C.y}" stroke-width="2" stroke-dasharray="4 3"/><text x="180" y="176" font-size="16">💡</text><circle cx="40" cy="160" r="16" fill="#fff" stroke="#333"/><text x="40" y="166" text-anchor="middle" font-size="16">🥚</text>`,'CRATERS = VALVES','EGGS & ELECTRICITY','y',1,'Tourists boil eggs… engineers tap them for electricity.'],
+ ['59–65','MECHANISM','MAP','2.5D + OVL',B.ocean+land('M10 150 q30 -20 60 -5 q10 30 -10 50 q-30 10 -50 -10z')+land('M120 260 q30 -10 60 0 q10 15 -20 20 q-30 2 -40 -20z')+`<rect x="30" y="300" width="36" height="60" fill="#555"/><rect x="140" y="320" width="36" height="40" fill="${C.y}" stroke="#333"/><text x="48" y="376" text-anchor="middle" fill="#222" font-size="10" font-weight="bold">US #1</text><text x="158" y="376" text-anchor="middle" fill="#222" font-size="10" font-weight="bold">INDONESIA #2 ↑</text>`,'INDONESIA: #2 IN THE WORLD','ADDED THE MOST IN 2025','y',1,'World\'s number two… added more than any other country.'],
+ ['65–69','LAYER 2','BLOCK','I2V + OVL',B.studio+block(20,210,180,120,{res:.5,lid:.3,vent:1})+gas('M140 200 q-10 -30 20 -40 q30 -5 30 25 q0 20 -25 20z'),'NOT JUST STEAM','',null,1,'A pressure cooker doesn\'t just let out steam.'],
+ ['69–73','LAYER 2','MAP','OVL',B.paper+valley+fig(70,250)+`<path d="M100 230 q8 -8 0 -16 q-8 -8 0 -16 M115 240 q8 -8 0 -16 q-8 -8 0 -16" stroke="#e0a800" stroke-width="3" fill="none"/><path d="M55 262 l-14 3 M55 270 l-14 3" stroke="#555" stroke-width="1.5"/>`,'THE ROTTEN-EGG GAS','MAKES YOU RUN','y',1,'The rotten-egg one is sulfur. That smell makes you run.'],
+ ['73–79','TWIST','GFX','OVL',B.studio+gas('M40 260 q-10 -40 30 -50 q30 -30 60 0 q40 0 30 40 q0 30 -60 25 q-50 10 -60 -15z')+`<path d="M50 350 h120" stroke="#333" stroke-width="3"/><path d="M110 350 v-24" stroke="#333" stroke-width="3"/><circle cx="62" cy="340" r="14" fill="${C.b}" stroke="#2a6f9e"/><circle cx="158" cy="330" r="9" fill="#fff" stroke="#999"/><text x="62" y="378" text-anchor="middle" font-size="10" fill="#222" font-weight="bold">CO₂ 1.5×</text><text x="158" y="378" text-anchor="middle" font-size="10" fill="#222">air</text>`,'THE DEADLIEST ONE','NO SMELL. NO COLOR.','r',1,'No smell, no color. Carbon dioxide. 1.5× heavier than air.'],
+ ['79–86','TWIST','BLOCK','OVL',B.studio+block(10,190,200,140,{valley:1})+gas('M30 180 q40 20 70 35 q20 8 40 -2 q30 -16 60 -30 v20 q-40 30 -70 34 q-40 -2 -100 -40z')+`<path d="M45 186 l18 12 m-5 0 l5 0 l-1 -5" stroke="#2a6f9e" stroke-width="2.5" fill="none"/>`,'IT DOESN\'T RISE','IT FLOWS DOWNHILL','b',1,'It flows downhill like water, and fills the low ground. (KEY SHOT)'],
+ ['86–92','PAYOFF','MAP','OVL',B.paper+valley+volc(185,210,.9)+gas('M40 260 Q110 330 180 260 L230 300 V391 H-10 V300z')+fig(105,300,1,.5)+fig(125,292,1,.35)+`<text x="110" y="375" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">▶ freeze-frame from #4 resumes</text>`,'THEY RAN DOWNHILL','INTO A LAKE OF INVISIBLE AIR','r',1,'In 1979 they ran… straight into a lake of air they couldn\'t see.'],
+ ['92–96','RECAP','MAP','I2V + OVL',B.paper+land('M10 220 q100 -40 200 0 v120 H10z')+volc(60,270,.5)+volc(150,250,.5)+`<text x="110" y="330" text-anchor="middle" fill="#333" font-size="22" font-weight="bold">CURSE</text>`+X(110,322,30),'NOT CURSED','A PRESSURE COOKER, VALVES OPEN','y',1,'Dieng isn\'t cursed. A pressure cooker with the valves open.'],
+ ['96–100','TIP','GFX','OVL',B.studio+`<g opacity=".5">${block(20,250,180,90,{valley:1})}</g><text x="45" y="200" font-size="28">🧊</text><text x="95" y="200" font-size="28">🥚</text><text x="145" y="200" font-size="28">💡</text>`+X(110,262,14)+`<rect x="160" y="226" width="34" height="24" fill="${C.y}" stroke="#333"/><text x="177" y="243" text-anchor="middle" font-size="15" font-weight="bold">!</text>`,'ENJOY THE CRATER','AVOID THE LOW SPOTS','y',1,'Freeze your fingers, boil your eggs… don\'t stand in the low spots.'],
+ ['100–104','NEXT','MAP','I2V + OVL',B.ocean+land('M20 160 q60 -30 140 -10 q40 40 20 120 q-30 70 -70 90 q-30 -40 -40 -100 q-60 -20 -50 -100z')+`<ellipse cx="95" cy="240" rx="10" ry="6" fill="#1b4f72"/>`+pin(95,240,'LAKE NYOS · 1986')+`<g transform="rotate(-10 160 330)"><rect x="125" y="318" width="72" height="24" rx="4" fill="none" stroke="${C.r}" stroke-width="3"/><text x="161" y="335" text-anchor="middle" fill="${C.r}" font-size="13" font-weight="bold">PART 2</text></g>`,'1986. A LAKE IN AFRICA.','1,700+ PEOPLE','r',1,'In 1986, a lake in Africa did the same thing, to over 1,700 people.'],
+ ['104–110','CTA','MAP','I2V + OVL',B.paper+land('M-10 260 q120 -40 240 0 V391 H-10z')+`<ellipse cx="140" cy="278" rx="26" ry="9" fill="#9a9184"/><path d="M140 270 q-8 -20 4 -40 q8 -14 -2 -30" stroke="#fff" stroke-width="10" fill="none" opacity=".8"/>`+fig(100,252,1.3)+`<ellipse cx="114" cy="252" rx="4" ry="5" fill="#fff" stroke="#999"/><text x="110" y="375" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">hold ±6 s</text>`,'WOULD YOU BOIL AN EGG IN A VOLCANO?','YES OR NOPE? COMMENT 👇','y',1,'Be honest: would you boil an egg in a volcano?'],
+];
+const g=document.getElementById('g');
+beats.forEach((b,i)=>{const[t,act,sty,anim,art,l1,l2,col,light,vo]=b;
+ const sc=SC[sty.split(' ')[0]];
+ g.insertAdjacentHTML('beforeend',`<div class="card"><svg width="220" height="391" viewBox="0 0 220 391" xmlns="http://www.w3.org/2000/svg">${art}<text x="110" y="22" text-anchor="middle" fill="${light?'#000':'#fff'}" opacity=".3" font-size="9">● channel watermark</text>${text(l1,l2,col,light)}</svg><div class="meta"><div class="h"><span>#${i+1} · ${t}s</span><span class="act">${act}</span></div><div class="vo">“${vo}”</div><div class="tags"><span class="tag" style="background:${sc}">${sty}</span><span class="tag" style="background:#e9ecf2">${anim}</span></div></div></div>`)});
+</script></body></html>

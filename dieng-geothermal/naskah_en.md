@@ -14,10 +14,10 @@ Curiosity question every ±15 s: How can one place do all three? → Why so hot,
 | 3 | 4–6 | Hook | And the air once killed over 140 people in one morning. | THE AIR KILLED 140+ | IN ONE MORNING (red) | Hard cut: empty village street in grey fog, flat illustration, silence beat |
 | 4 | 6–10 | Stakes | Here's the strange part: they didn't die in the eruption. They died running away from it. | THEY DIDN'T DIE IN THE ERUPTION | THEY DIED RUNNING FROM IT (red) | Chibi villagers running downhill away from a small eruption plume; frame freezes mid-run |
 | 5 | 10–14 | Invite | This is Dieng, Indonesia. And today, the same ground lights up homes. | DIENG, INDONESIA | NOW IT POWERS HOMES (yellow) | 3D satellite fly-in to the plateau; white label "DIENG · 2,000 m"; power plant with glowing pipes |
-| 6 | 14–17 | Invite | One place. Freezing, boiling, deadly and useful. How? Let's dig. Literally. | HOW? | LET'S DIG. LITERALLY. (yellow) | Chibi explorer picks up a shovel; camera plunges into a ground cross-section |
-| 7 | 17–22 | Scale | Normally, if you drill 2 kilometers down, you hit about 70 degrees. A hot bath. | NORMAL GROUND, 2 KM DOWN | ≈ 70°C. A HOT BATH (yellow) | Split screen left: drill line to 2 km, bathtub icon with a rubber duck |
-| 8 | 22–27 | Scale | Drill 2 kilometers here, and you hit water over 250 degrees. | HERE, 2 KM DOWN | 250°C+ (red) | Split screen right: same drill line, needle slams into red, duck melts |
-| 9 | 27–32 | Scale | Shrink Earth to an apple, and 2 km doesn't even get through the skin. So why is it this hot, this close? | ON AN APPLE-SIZED EARTH | NOT EVEN THROUGH THE SKIN (yellow) | Globe morphs into an apple; magnifier shows a scratch thinner than the peel; "?" pops |
+| 6 | 14–17 | Invite | One place. Freezing, boiling, deadly and useful. How? Let's dig. Literally. | HOW? | LET'S DIG. LITERALLY. (yellow) | Top of the Earth-layers cutaway; camera starts to dive |
+| 7 | 17–22 | Scale | The center of our planet is about as hot as the surface of the Sun. | EARTH'S CORE | ≈ 5,400°C, LIKE THE SUN (red) | Camera dives through crust, mantle, outer core to the glowing inner core; sun icon beside the label |
+| 8 | 22–27 | Scale | But here, you don't need to go anywhere near that. Just 2 kilometers. This thin. | YOU ONLY NEED | 2 KM. THIS THIN. (yellow) | Whoosh back up to the crust; zoom into a hairline at the very top labeled 2 KM |
+| 9 | 27–32 | Scale | On normal ground, 2 km down is about 70 degrees, a hot bath. Here, it's over 250. So why is it this hot, this close? | NORMAL: ≈70°C · HERE: 250°C+ | WHY SO HOT, SO CLOSE? (yellow) | Two terrain blocks side by side: left a blue-ish well with a bath icon, right a red-glowing well |
 | 10 | 32–37 | Mechanism | Because Indonesia sits on the Ring of Fire, and Dieng sits on an old volcano. The magma is shallow. That's the stove. | DIENG SITS ON A VOLCANO | MAGMA = THE STOVE (red) | Globe shows Ring of Fire glowing; zoom to cutaway, orange magma pocket becomes a stove burner |
 | 11 | 37–41 | Mechanism | Rain soaks into porous rock above it. That's the water in the pot. | RAIN IN POROUS ROCK | = THE WATER (yellow) | Raindrops seep into sponge-like rock that fills with blue |
 | 12 | 41–45 | Mechanism | And a layer of sealed rock caps it. That's the lid. | SEALED ROCK ON TOP | = THE LID (yellow) | Grey layer slides over; pressure arrows push against it |
@@ -40,7 +40,7 @@ Curiosity question every ±15 s: How can one place do all three? → Why so hot,
 > The ground here boils. The dew here freezes. And the air once killed over 140 people in one morning.
 > Here's the strange part: they didn't die in the eruption. They died running away from it.
 > This is Dieng, Indonesia. And today, the same ground lights up homes. One place. Freezing, boiling, deadly and useful. How? Let's dig. Literally.
-> Normally, if you drill 2 kilometers down, you hit about 70 degrees. A hot bath. Drill 2 kilometers here, and you hit water over 250 degrees. Shrink Earth to an apple, and 2 km doesn't even get through the skin. So why is it this hot, this close?
+> The center of our planet is about as hot as the surface of the Sun. But here, you don't need to go anywhere near that. Just 2 kilometers. This thin. On normal ground, 2 km down is about 70 degrees, a hot bath. Here, it's over 250. So why is it this hot, this close?
 > Because Indonesia sits on the Ring of Fire, and Dieng sits on an old volcano. The magma is shallow. That's the stove. Rain soaks into porous rock above it. That's the water in the pot. And a layer of sealed rock caps it. That's the lid. Stove, water, lid. You're standing on Earth's pressure cooker.
 > Which is why 250-degree water stays liquid down there. It's squeezed too hard to boil. The craters are the valves. Tourists boil eggs in them. Engineers tap them for electricity. Do that across a whole country, and Indonesia became the world's number two geothermal producer. Last year it added more than any other country.
 > But a pressure cooker doesn't just let out steam. It lets out gas. The rotten-egg one is sulfur. That smell makes you run. The deadliest one has no smell, no color. Carbon dioxide. And it's one and a half times heavier than air. So it doesn't rise. It flows downhill like water, and fills the low ground.
@@ -73,7 +73,8 @@ Curiosity question every ±15 s: How can one place do all three? → Why so hot,
 | CO₂ is ±1.5× heavier than air | Fixed fact | 1.98 vs 1.29 kg/m³ |
 | Normal ground 2 km down ≈ 70°C | Calculated | ~15°C at the surface + 2 × 25–30°C/km ≈ 65–75°C |
 | Dieng reservoir >250°C at ~2 km | Strong | Literature puts it at ~250–330°C; wells ~1.5–3 km deep |
-| Apple analogy | Checked | 2/6,371 ≈ 0.03% → ~0.013 mm on a 4 cm apple, thinner than the peel |
+| Inner core ≈5,400°C, about the Sun's surface (≈5,500°C) | Strong | Estimates ~5,200–5,400°C. The "7,000°C" in the reference infographic is exaggerated, so it is not used |
+| "2 km. This thin." | Checked | 2 km out of 6,371 km ≈ 0.03% of the radius, a hairline on the cutaway |
 | Sikidang ±90°C, frozen dew ±−2°C | Strong / illustrative | Water boils at ~93°C at 2,000 m; frozen dew happens in the dry season |
 | Tourists boil eggs at Sikidang | Strong | A common tourist activity |
 | Indonesia #2 in geothermal | Verified | ~2,742 MW vs US ~3,950 MW (installed, end of 2025) |
